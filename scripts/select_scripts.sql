@@ -22,6 +22,11 @@ intersect
 select menuid from contains
 where name in (select name
                 from dish
-                where type = 'vegetarian')
+                where type = 'vegetarian');
 
 /*select supplier and ingredients involved with name, and invoices with that supplier*/
+select address from venue
+where kitchen = false
+  and exists (select address
+                from event
+                where attendees > 25);
