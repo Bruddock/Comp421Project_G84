@@ -1,7 +1,7 @@
-/*select all staff employed on a specific event)*/
+/*select all accountants tied to a specific event*/
 select staff.employeeid, role, name
-from staff join staffby on staff.employeeid = staffby.employeeid
-where staffby.reservationid = 1093;
+from staff join runs on staff.employeeid = runs.employeeid
+where runs.acctid = 1093;
 
 /*select unpaid invoices*/
 select name, emailaddress
@@ -15,8 +15,13 @@ where emailaddress in (select clientemail
 select invoiceid, date, amount from invoice
 where extract(year from date) = 2019;
 
-/*select all vegetarian menus? or menus with alcoholic*/
-
-
+/*select menus that contain at least one dish that is vegetarian.*/
+select menuid from menu
+where numcourses > 0
+intersect
+select menuid from contains
+where name in (select name
+                from dish
+                where type = 'vegetarian')
 
 /*select supplier and ingredients involved with name, and invoices with that supplier*/
