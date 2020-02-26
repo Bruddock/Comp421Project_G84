@@ -13,6 +13,7 @@ import java.sql.DriverManager;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Random;
 
 
@@ -77,29 +78,33 @@ Statement statement = con.createStatement ( ) ;
 //		genCustomer("customer",sqlCode, sqlState, statement);
 //		genDish("dish",sqlCode, sqlState, statement);
 //		gendrink("drink","dish",sqlCode, sqlState, statement);
-//		genReservation("reservation",sqlCode, sqlState, statement);
 //		genvenue("venue", sqlCode, sqlState, statement);
 //		genMenu("menu",sqlCode, sqlState, statement);
 //		genStaff("staff", sqlCode, sqlState, statement);
 //		genSupplier("supplier", sqlCode, sqlState, statement);
 //		genspecaccts("account", sqlCode, sqlState, statement);
 
-//		genEvent("reservation", "event",sqlCode, sqlState, statement);
-//		geninvoice("invoice",sqlCode, sqlState, statement);
+//		genReservation("reservation", sqlCode, sqlState, statement);
+//		genEvent("reservation", "event", sqlCode, sqlState, statement);
+//		geninvoice("invoice", sqlCode, sqlState, statement);
 
-//		genidstring( "contains", "dish", "menu", sqlCode, sqlState, statement, "menuid", "name"); //id string
 //		genidstring( "reserves", "customer", "reservation", sqlCode, sqlState, statement,"reservationid", "emailaddress"); //id string
-//		gentwoidtemplate("runs", "account", "staff", sqlCode, sqlState, statement, "employeeid", "acctid"); //id id
+		//		genpayment("reservationpayment", "invoice", "accountreceivable", "customer", sqlCode, sqlState, statement, "emailaddress", "acctid", "invoiceid");
+//		genpayment("supplypayment", "invoice", "accountpayable", "supplier", sqlCode, sqlState, statement, "companyname", "acctid", "invoiceid");
+//		geniddatetime("initiate", "event", "reservation", sqlCode, sqlState, statement, "reservationid", "edate", "etime", "reservationid");
+//		genstringdatetime("located", "event", "venue", sqlCode, sqlState, statement, "address", "edate", "etime", "reservationid");
+
+		genidstring( "contains", "dish", "menu", sqlCode, sqlState, statement, "menuid", "name"); //id string
 
 		//generate salary amount
-//		gentwoidtemplate("salary", "staff", "accountpayable", sqlCode, sqlState, statement, "acctid", "employeeid"); //id id
-
+//		gensalary("salary", "staff", "accountpayable", sqlCode, sqlState, statement, "acctid", "employeeid"); //id id
+//		gentwoidtemplate("runs", "account", "staff", sqlCode, sqlState, statement, "employeeid", "acctid"); //id id
 //		gentwoidtemplate("prepares", "staff", "menu", sqlCode, sqlState, statement, "menuid", "employeeid"); //id id
 
-		genpayment("reservationpayment", "invoice", "accountreceivable", "customer", sqlCode, sqlState, statement, "emailaddress", "acctid", "invoiceid");
-//		genpayment("supplypayment", "invoice", "accountpayable", "supplier", sqlCode, sqlState, statement, "companyname", "acctid", "invoiceid");
 //		geningreds("ingredients", "dish", "supplier", sqlCode, sqlState, statement, "companyname", "name");
 
+//		geniddatetime("has", "event", "menu", sqlCode, sqlState, statement, "menuid", "edate", "etime", "reservationid");
+//		genstaffby("staffby", "event", "staff", sqlCode, sqlState, statement, "employeeid", "edate", "etime", "reservationid");
 
 		// Querying a table
 //	try {
@@ -214,11 +219,19 @@ Statement statement = con.createStatement ( ) ;
 
 	static void genReservation(String tableName, int sqlCode, String sqlState, Statement statement){
 		try {
+			//need to get the customer email address to put into the final spot
+			String querySQL = "SELECT emailaddress from customer";
+			System.out.println (querySQL) ;
+			java.sql.ResultSet rs = statement.executeQuery ( querySQL ) ;
+			Random x = new Random();
+			ArrayList<String> commands = new ArrayList();
+			while ( rs.next ( ) ) {
+				commands.add(rs.getString(1));
+			}
 
 			String insertSQL;
-			for(int i=0; i<150; i++){
+			for(int i=0; i<100; i++){
 				insertSQL = "INSERT INTO " + tableName + " VALUES (";
-				Random x = new Random();
 				int year = 2013 + x.nextInt(7);
 				int month = 1 + x.nextInt(12);
 				int day = 1 + x.nextInt(28);
@@ -227,7 +240,8 @@ Statement statement = con.createStatement ( ) ;
 				int minute = x.nextInt(60);
 				int second = x.nextInt(60);
 				insertSQL += "\'" + hour + ":" + minute + ":" + second + "\', ";
-				insertSQL += (x.nextInt(1000) + 1000) + ")";
+				insertSQL += (x.nextInt(10000) + 3000) + ",";
+				insertSQL += "\'" + commands.get(x.nextInt(commands.size())) + "\')";
 				System.out.println ( insertSQL ) ;
 				statement.executeUpdate ( insertSQL ) ;
 				System.out.println ( "DONE" ) ;
@@ -397,13 +411,26 @@ Statement statement = con.createStatement ( ) ;
 	}
 
 	static void genEvent(String tableName1, String tableName, int sqlCode, String sqlState, Statement statement){
-		try {
 
-			String insertSQL;
-			String querySQL = "SELECT reservationid from " + tableName1 + " where reservationid > 500 AND reservationid <1500";
+    	//need to get the venue locations to generated the located in spot 8
+		//need to get the reservationid from reservation to generate spot 9
+
+
+    	try {
+
+			String querySQL = "SELECT address from venue";
 			System.out.println (querySQL) ;
 			java.sql.ResultSet rs = statement.executeQuery ( querySQL ) ;
 			Random x = new Random();
+			ArrayList<String> locations = new ArrayList();
+			while ( rs.next ( ) ) {
+				locations.add(rs.getString(1));
+			}
+
+			String insertSQL;
+			querySQL = "SELECT reservationid from " + tableName1 ;
+			System.out.println (querySQL) ;
+			rs = statement.executeQuery ( querySQL ) ;
 			ArrayList<String> commands = new ArrayList();
 			while ( rs.next ( ) ) {
 				insertSQL = "INSERT INTO " + tableName + " VALUES (";
@@ -411,7 +438,7 @@ Statement statement = con.createStatement ( ) ;
 				if(x.nextInt(2) == 1) insertSQL += "\'true\' , ";
 				else insertSQL += "\'false\' , ";
 				//staff amount
-				insertSQL += x.nextInt(100) + " , ";
+				insertSQL += (x.nextInt(10) + 1) + " , ";
 				//time
 				int hour = x.nextInt(5);
 				int minute = x.nextInt(60);
@@ -421,7 +448,17 @@ Statement statement = con.createStatement ( ) ;
 				if(x.nextInt(2) == 1) insertSQL += "\'true\' , ";
 				else insertSQL += "\'false\' , ";
 				//event descript
-				insertSQL += "\'party\' , ";
+				switch(x.nextInt(4)){
+					case 0: insertSQL += "\'party\' , ";
+							break;
+					case 1: insertSQL += "\'wedding\' , ";
+							break;
+					case 2: insertSQL += "\'wake\' , ";
+							break;
+					case 3: insertSQL += "\'conferences\' , ";
+							break;
+
+				}
 				//date
 				int year = 2013 + x.nextInt(7);
 				int month = 1 + x.nextInt(12);
@@ -429,8 +466,8 @@ Statement statement = con.createStatement ( ) ;
 				insertSQL += "\'" + year + "-" + month + "-" + day + "\', ";
 				//attendee amount
 				insertSQL += x.nextInt(100) + " , ";
-				int id = rs.getInt ( 1 ) ;
-				insertSQL += id + ")";
+				insertSQL += "\'" + locations.get(x.nextInt(locations.size())) + "\', ";
+				insertSQL += rs.getInt ( 1 ) + ")";
 				System.out.println ( insertSQL ) ;
 				commands.add(insertSQL);
 //			statement.executeUpdate ( insertSQL ) ;
@@ -554,8 +591,6 @@ Statement statement = con.createStatement ( ) ;
 		}
 	}
 
-
-
 	static void genvenue(String tableName, int sqlCode, String sqlState, Statement statement){
 		try {
 
@@ -595,15 +630,47 @@ Statement statement = con.createStatement ( ) ;
 	}
 
 	static void geninvoice(String tableName, int sqlCode, String sqlState, Statement statement) {
-		try {
+		//need to get client emails for spot 8 OR
+		//need to get supplier name for spot 9
+		//need to use some acct id from correct set of accounts
+
+    	try {
+
+			String querySQL = "SELECT emailaddress from customer";
+			System.out.println (querySQL) ;
+			java.sql.ResultSet rs = statement.executeQuery ( querySQL ) ;
+			Random x = new Random();
+			ArrayList<String> emails = new ArrayList();
+			while ( rs.next ( ) ) {
+				emails.add("\'" + rs.getString(1) + "\'");
+			}
+
+			querySQL = "SELECT companyname from supplier";
+			System.out.println (querySQL) ;
+			rs = statement.executeQuery ( querySQL ) ;
+			ArrayList<String> suppliers = new ArrayList();
+			while ( rs.next ( ) ) {
+				suppliers.add("\'" + rs.getString(1) + "\'");
+			}
+
+			querySQL = "SELECT acctid from accountreceivable";
+			System.out.println (querySQL) ;
+			rs = statement.executeQuery ( querySQL ) ;
+			ArrayList<Integer> ingoing = new ArrayList();
+			while ( rs.next ( ) ) {
+				ingoing.add(rs.getInt(1));
+			}
+
+			querySQL = "SELECT acctid from accountpayable";
+			System.out.println (querySQL) ;
+			rs = statement.executeQuery ( querySQL ) ;
+			ArrayList<Integer> outgoing = new ArrayList();
+			while ( rs.next ( ) ) {
+				outgoing.add(rs.getInt(1));
+			}
 
 			String insertSQL;
-//		String querySQL = "SELECT name from " + tableName + " where name > \'dish\'";
-//	    System.out.println (querySQL) ;
-//	    java.sql.ResultSet rs = statement.executeQuery ( querySQL ) ;
-			Random x = new Random();
-			ArrayList<String> commands = new ArrayList();
-			for(int i=0; i<50; i++){
+			for(int i=0; i<450; i++){
 				insertSQL = "INSERT INTO " + tableName + " VALUES (";
 				//date
 				int year = 2013 + x.nextInt(7);
@@ -612,49 +679,41 @@ Statement statement = con.createStatement ( ) ;
 				insertSQL += "\'" + year + "-" + month + "-" + day + "\', ";
 				//amount
 				insertSQL += x.nextInt(10000) + ",";
+
 				//seller/buyer
-				if(x.nextInt(1) == 0){
+				int check = x.nextInt(2);
+				if( check == 0){
 					insertSQL += "\'reservation payment\' ,";
-					//invoice id
-					insertSQL += (x.nextInt(1000) + 2000) + ",";
-					//status
-					switch(x.nextInt(4)){
-						case 0:
-							insertSQL += "\'pending\' ,";
-							break;
-						case 1:
-							insertSQL += "\'rejected\' ,";
-							break;
-						case 2:
-							insertSQL += "\'accepted\' ,";
-							break;
-						case 3:
-							insertSQL += "\'under review\' ,";
-							break;
-					}
-					insertSQL += "\'cateringCo\' ,";
-					insertSQL += "\'customer" + (i + 50) + "\'";
+//
 				} else {
 					insertSQL += "\'ingredients purchase\' ,";
-					//invoice id
-					insertSQL += (x.nextInt(1000) + 1000) +  ",";
-					//status
-					switch(x.nextInt(4)){
-						case 0:
-							insertSQL += "\'pending\' ,";
-							break;
-						case 1:
-							insertSQL += "\'rejected\' ,";
-							break;
-						case 2:
-							insertSQL += "\'accepted\' ,";
-							break;
-						case 3:
-							insertSQL += "\'under review\' ,";
-							break;
-					}
-					insertSQL += "\'supplier" + i + "\' , ";
-					insertSQL += "\'cateringCo\'";
+				}
+				//invoice id
+				insertSQL += (x.nextInt(10000) + 10000) + ",";
+				//status
+				switch(x.nextInt(4)){
+					case 0:
+						insertSQL += "\'pending\' ,";
+						break;
+					case 1:
+						insertSQL += "\'rejected\' ,";
+						break;
+					case 2:
+						insertSQL += "\'accepted\' ,";
+						break;
+					case 3:
+						insertSQL += "\'under review\' ,";
+						break;
+				}
+
+				if(check == 1){ //outgoing
+					insertSQL += "NULL, ";
+					insertSQL += suppliers.get(x.nextInt(suppliers.size())) + ", ";
+					insertSQL += outgoing.get(x.nextInt(outgoing.size()));
+				} else { //incoming
+					insertSQL += emails.get(x.nextInt(emails.size())) + ", ";
+					insertSQL += "NULL, ";
+					insertSQL += ingoing.get(x.nextInt(ingoing.size()));
 				}
 
 				insertSQL += " )";
@@ -683,29 +742,31 @@ Statement statement = con.createStatement ( ) ;
 			System.out.println (querySQL) ;
 			java.sql.ResultSet rs = statement.executeQuery ( querySQL ) ;
 			Random x = new Random();
-			ArrayList<String> commands = new ArrayList();
-			while ( rs.next ( ) ) {
-				insertSQL = "INSERT INTO " + tableName2 + " VALUES (";
-				//budget amount
-				insertSQL += rs.getInt(1) + " , ";
-				System.out.println ( insertSQL ) ;
-				commands.add(insertSQL);
-//			statement.executeUpdate ( insertSQL ) ;
-//				System.out.println ( "DONE" ) ;
+
+			ArrayList<Integer> menus = new ArrayList<>();
+			while(rs.next ()){
+				menus.add(rs.getInt(1));
 			}
-			querySQL = "SELECT "+ id2 +" from " + tableName1 + " where "+ id2 +" > \'C\'";
+
+			querySQL = "SELECT "+ id2 +" from " + tableName1 + " where " + id2 + " > \'C\'";
 			System.out.println (querySQL) ;
 			rs = statement.executeQuery ( querySQL ) ;
-//		commands = new ArrayList();
-			int spot = 0;
-			while ( rs.next ( ) ) {
-				if(spot != commands.size()) {
-					String temp = commands.get(spot);
-					temp += "\'" + rs.getString(1) + "\')";
-					System.out.println(temp);
-					commands.set(spot, temp);
-					spot++;
-				}
+
+			ArrayList<String> dishes = new ArrayList<>();
+			while(rs.next ()){
+				dishes.add(rs.getString(1));
+			}
+
+
+			ArrayList<String> commands = new ArrayList();
+			for(int i = 0; i< 100; i++) {
+				insertSQL = "INSERT INTO " + tableName2 + " VALUES (";
+				//budget amount
+				insertSQL += menus.get(x.nextInt(menus.size()))+ " , ";
+				insertSQL += "\'" + dishes.get(x.nextInt(dishes.size())) + "\')";
+				System.out.println(insertSQL);
+
+				commands.add(insertSQL);
 //			statement.executeUpdate ( insertSQL ) ;
 //				System.out.println ( "DONE" ) ;
 			}
@@ -730,36 +791,85 @@ Statement statement = con.createStatement ( ) ;
 	static void gentwoidtemplate(String tableName2, String tableName1, String tableName, int sqlCode, String sqlState, Statement statement, String id1, String id2){
 		try {
 
+
 			String insertSQL;
-			String querySQL = "SELECT " + id1 + " from " + tableName + " where " + id1 + " > 0";
+			String querySQL = "SELECT "+ id1 +" from " + tableName;
 			System.out.println (querySQL) ;
 			java.sql.ResultSet rs = statement.executeQuery ( querySQL ) ;
 			Random x = new Random();
-			ArrayList<String> commands = new ArrayList();
-			while ( rs.next ( ) ) {
-				insertSQL = "INSERT INTO " + tableName2 + " VALUES (";
-				//budget amount
-				insertSQL += rs.getInt(1) + " , ";
-				System.out.println ( insertSQL ) ;
-				commands.add(insertSQL);
-//			statement.executeUpdate ( insertSQL ) ;
-//				System.out.println ( "DONE" ) ;
+
+			ArrayList<Integer> ids1 = new ArrayList<>();
+			while(rs.next ()){
+				ids1.add(rs.getInt(1));
 			}
-			querySQL = "SELECT " + id2 + " from " + tableName1 + " where " + id2 + " > 0";
+
+			querySQL = "SELECT "+ id2 +" from " + tableName1;
 			System.out.println (querySQL) ;
 			rs = statement.executeQuery ( querySQL ) ;
-//		commands = new ArrayList();
-			int spot = 0;
-			while ( rs.next ( ) ) {
-				if(spot != commands.size()) {
-					String temp = commands.get(spot);
-					temp +=  rs.getInt(1) + ")";
-					System.out.println(temp);
-					commands.set(spot, temp);
-					spot++;
-				}
-//			statement.executeUpdate ( insertSQL ) ;
-//				System.out.println ( "DONE" ) ;
+
+			ArrayList<Integer> ids2 = new ArrayList<>();
+			while(rs.next ()){
+				ids2.add(rs.getInt(1));
+			}
+
+			ArrayList<String> commands = new ArrayList();
+			for(int i = 0; i < 100; i++) {
+				insertSQL = "INSERT INTO " + tableName2 + " VALUES (";
+				//budget amount
+				insertSQL += ids1.get(x.nextInt(ids1.size())) + " , ";
+				insertSQL += ids2.get(x.nextInt(ids2.size())) + ")";
+				commands.add(insertSQL);
+			}
+			for(String s:commands){
+				System.out.println ( s ) ;
+				statement.executeUpdate ( s ) ;
+				System.out.println ( "DONE" ) ;
+			}
+
+
+		} catch (SQLException e)
+		{
+			sqlCode = e.getErrorCode(); // Get SQLCODE
+			sqlState = e.getSQLState(); // Get SQLSTATE
+
+			// Your code to handle errors comes here;
+			// something more meaningful than a print would be good
+			System.out.println("Code: " + sqlCode + "  sqlState: " + sqlState);
+		}
+	}
+
+	static void gensalary(String tableName2, String tableName1, String tableName, int sqlCode, String sqlState, Statement statement, String id1, String id2){
+		try {
+
+
+			String insertSQL;
+			String querySQL = "SELECT "+ id1 +" from " + tableName;
+			System.out.println (querySQL) ;
+			java.sql.ResultSet rs = statement.executeQuery ( querySQL ) ;
+			Random x = new Random();
+
+			ArrayList<Integer> ids1 = new ArrayList<>();
+			while(rs.next ()){
+				ids1.add(rs.getInt(1));
+			}
+
+			querySQL = "SELECT "+ id2 +" from " + tableName1;
+			System.out.println (querySQL) ;
+			rs = statement.executeQuery ( querySQL ) ;
+
+			ArrayList<Integer> ids2 = new ArrayList<>();
+			while(rs.next ()){
+				ids2.add(rs.getInt(1));
+			}
+
+			ArrayList<String> commands = new ArrayList();
+			for(int i = 0; i < ids2.size(); i++) {
+				insertSQL = "INSERT INTO " + tableName2 + " VALUES (";
+				//budget amount
+				insertSQL += ids1.get(x.nextInt(ids1.size())) + " , ";
+				insertSQL += ids2.get(i) + ", ";
+				insertSQL += (x.nextInt(15000) + 20000) + " ) ";
+				commands.add(insertSQL);
 			}
 			for(String s:commands){
 				System.out.println ( s ) ;
@@ -855,65 +965,106 @@ Statement statement = con.createStatement ( ) ;
 			System.out.println (querySQL) ;
 			java.sql.ResultSet rs = statement.executeQuery ( querySQL ) ;
 			Random x = new Random();
-			ArrayList<String> commands = new ArrayList();
+			ArrayList<String> company = new ArrayList<>();
 			while ( rs.next ( ) ) {
-				insertSQL = "INSERT INTO " + tableName2 + " VALUES (";
-				//budget amount
-				insertSQL += "\'" + rs.getString(1) + "\' , ";
-				System.out.println ( insertSQL ) ;
-				commands.add(insertSQL);
-//			statement.executeUpdate ( insertSQL ) ;
-//				System.out.println ( "DONE" ) ;
+				company.add(rs.getString(1));
 			}
+
 			querySQL = "SELECT "+ id2 +" from " + tableName1 + " where "+ id2 + " > \'a\'";
 			System.out.println (querySQL) ;
 			rs = statement.executeQuery ( querySQL ) ;
-//		commands = new ArrayList();
-			int spot = 0;
+			ArrayList<String> dishname = new ArrayList<>();
 			while ( rs.next ( ) ) {
-				if(spot != commands.size()) {
-					String temp = commands.get(spot);
-					temp +=  "\'" + rs.getString(1) + "\' , ";
-					//date
-					int year = 2013 + x.nextInt(7);
-					int month = 1 + x.nextInt(12);
-					int day = 1 + x.nextInt(28);
-					temp += "\'" + year + "-" + month + "-" + day + "\', ";
-					//date
-					year = 2013 + x.nextInt(7);
-					month = 1 + x.nextInt(12);
-					day = 1 + x.nextInt(28);
-					temp += "\'" + year + "-" + month + "-" + day + "\', ";
-					temp += x.nextInt(100) + " , ";
-					switch(x.nextInt(6)){
-						case 0:
-							temp += "\'Meat and Poultry\')";
-							break;
-						case 1:
-							temp += "\'Dairy\')";
-							break;
-						case 2:
-							temp += "\'Fruit\')";
-							break;
-						case 3:
-							temp += "\'Fish and Seafood\')";
-							break;
-						case 4:
-							temp += "\'Vegetables\')";
-							break;
-						case 5:
-							temp += "\'Grains, Beans and Nuts\')";
-							break;
-						case 6:
-							temp += "\'Liquids\')";
-							break;
-					}
-					System.out.println(temp);
-					commands.set(spot, temp);
-					spot++;
+				dishname.add(rs.getString(1));
+			}
+
+			ArrayList<String> commands = new ArrayList();
+
+			for(int i = 0; i<400; i++) {
+				insertSQL = "INSERT INTO " + tableName2 + " VALUES (";
+				//budget amount
+				insertSQL += "\'" + company.get(x.nextInt(company.size())) + "\' , ";
+				insertSQL +=  "\'" + dishname.get(x.nextInt(dishname.size())) + "\' , ";
+				//date
+				int year = 2013 + x.nextInt(7);
+				int month = 1 + x.nextInt(12);
+				int day = 1 + x.nextInt(28);
+				insertSQL += "\'" + year + "-" + month + "-" + day + "\', ";
+				//date
+				year = 2013 + x.nextInt(7);
+				month = 1 + x.nextInt(12);
+				day = 1 + x.nextInt(28);
+				insertSQL += "\'" + year + "-" + month + "-" + day + "\', ";
+				insertSQL += x.nextInt(100) + " , ";
+				switch(x.nextInt(22)){
+					case 0:
+						insertSQL += "\'Tofu\')";
+						break;
+					case 1:
+						insertSQL += "\'Beyond Meat\')";
+						break;
+					case 2:
+						insertSQL += "\'Pork\')";
+						break;
+					case 3:
+						insertSQL += "\'Chicken\')";
+						break;
+					case 4:
+						insertSQL += "\'Beef\')";
+						break;
+					case 5:
+						insertSQL += "\'Fish\')";
+						break;
+					case 6:
+						insertSQL += "\'Shellfish\')";
+						break;
+					case 7:
+						insertSQL += "\'Potato\')";
+						break;
+					case 8:
+						insertSQL += "\'Rice\')";
+						break;
+					case 9:
+						insertSQL += "\'Olive Oil\')";
+						break;
+					case 10:
+						insertSQL += "\'Produce\')";
+						break;
+					case 11:
+						insertSQL += "\'Legumes\')";
+						break;
+					case 12:
+						insertSQL += "\'Leafy Greens\')";
+						break;
+					case 13:
+						insertSQL += "\'Pasta\')";
+						break;
+					case 14:
+						insertSQL += "\'Eggs\')";
+						break;
+					case 15:
+						insertSQL += "\'Beer\')";
+						break;
+					case 16:
+						insertSQL += "\'Cider\')";
+						break;
+					case 17:
+						insertSQL += "\'Wine\')";
+						break;
+					case 18:
+						insertSQL += "\'Flour\')";
+						break;
+					case 19:
+						insertSQL += "\'Nuts\')";
+						break;
+					case 20:
+						insertSQL += "\'Spices\')";
+						break;
+					case 21:
+						insertSQL += "\'Fruits\')";
+						break;
 				}
-//			statement.executeUpdate ( insertSQL ) ;
-//				System.out.println ( "DONE" ) ;
+				commands.add(insertSQL);
 			}
 			for(String s:commands){
 				System.out.println ( s ) ;
@@ -933,6 +1084,172 @@ Statement statement = con.createStatement ( ) ;
 		}
 	}
 
+	static void geniddatetime(String tableName2, String tableName1, String tableName, int sqlCode, String sqlState, Statement statement, String id1, String id2, String id3, String id4){
+		try {
+
+			String insertSQL;
+			String querySQL = "SELECT "+ id1 +" from " + tableName + " where " + id1 + " > 0";
+			System.out.println (querySQL) ;
+			java.sql.ResultSet rs = statement.executeQuery ( querySQL ) ;
+			Random x = new Random();
+			ArrayList<Integer> ids = new ArrayList<>();
+			while(rs.next()){
+				ids.add(rs.getInt(1));
+			}
+			ArrayList<String> dates = new ArrayList<>();
+			ArrayList<String> times = new ArrayList<>();
+			ArrayList<String> resids = new ArrayList<>();
+			querySQL = "SELECT "+ id2 + "," + id3 + ","+ id4 +" from " + tableName1;
+			rs = statement.executeQuery ( querySQL ) ;
+			while(rs.next()){
+				dates.add(rs.getString(1));
+				times.add(rs.getString(2));
+				resids.add(rs.getString(3));
+			}
+
+
+			ArrayList<String> commands = new ArrayList();
+			for(int i = 0; i < 250; i++) {
+				insertSQL = "INSERT INTO " + tableName2 + " VALUES (";
+				//budget amount
+				insertSQL += ids.get(x.nextInt(ids.size())) + " , ";
+				insertSQL += "\'" + dates.get(i)+ "\' ,";
+				insertSQL += "\'" + times.get(i) + "\' ,";
+				insertSQL += "\'" + resids.get(i) + "\' )";
+				commands.add(insertSQL);
+			}
+
+			for(String s:commands){
+				System.out.println ( s ) ;
+				statement.executeUpdate ( s ) ;
+				System.out.println ( "DONE" ) ;
+			}
+
+
+		} catch (SQLException e)
+		{
+			sqlCode = e.getErrorCode(); // Get SQLCODE
+			sqlState = e.getSQLState(); // Get SQLSTATE
+
+			// Your code to handle errors comes here;
+			// something more meaningful than a print would be good
+			System.out.println("Code: " + sqlCode + "  sqlState: " + sqlState);
+		}
+	}
+
+	static void genstaffby(String tableName2, String tableName1, String tableName, int sqlCode, String sqlState, Statement statement, String id1, String id2, String id3, String id4){
+		try {
+
+			String insertSQL;
+			String querySQL = "SELECT "+ id1 +" from " + tableName + " where " + id1 + " > 0";
+			System.out.println (querySQL) ;
+			java.sql.ResultSet rs = statement.executeQuery ( querySQL ) ;
+			Random x = new Random();
+			ArrayList<Integer> ids = new ArrayList<>();
+			while(rs.next()){
+				ids.add(rs.getInt(1));
+			}
+			ArrayList<String> dates = new ArrayList<>();
+			ArrayList<String> times = new ArrayList<>();
+			ArrayList<String> resids = new ArrayList<>();
+			ArrayList<Integer> stafflim = new ArrayList<>();
+			querySQL = "SELECT "+ id2 + "," + id3 + ","+ id4 + ", staffamount"  +" from " + tableName1;
+			rs = statement.executeQuery ( querySQL ) ;
+			while(rs.next()){
+				dates.add(rs.getString(1));
+				times.add(rs.getString(2));
+				resids.add(rs.getString(3));
+				stafflim.add(rs.getInt(4));
+			}
+
+
+			ArrayList<String> commands = new ArrayList();
+			for(int i = 0; i < dates.size(); i++) {
+				Collections.shuffle(ids);
+				insertSQL = "INSERT INTO " + tableName2 + " VALUES (";
+				//budget amount
+				insertSQL += "\'" + dates.get(i)+ "\' ,";
+				insertSQL += "\'" + times.get(i) + "\' ,";
+				insertSQL += "\'" + resids.get(i) + "\' ,";
+				for(int j = 0; j< stafflim.get(i); j++){
+					insertSQL += ids.get(j) + " ,";
+				}
+				for(int j = 0; j<(10-stafflim.get(i)); j++){
+					insertSQL += " NULL ,";
+				}
+				insertSQL = insertSQL.substring(0, insertSQL.length() - 1) + ")";
+				commands.add(insertSQL);
+			}
+
+			for(String s:commands){
+				System.out.println ( s ) ;
+				statement.executeUpdate ( s ) ;
+				System.out.println ( "DONE" ) ;
+			}
+
+
+		} catch (SQLException e)
+		{
+			sqlCode = e.getErrorCode(); // Get SQLCODE
+			sqlState = e.getSQLState(); // Get SQLSTATE
+
+			// Your code to handle errors comes here;
+			// something more meaningful than a print would be good
+			System.out.println("Code: " + sqlCode + "  sqlState: " + sqlState);
+		}
+	}
+
+	static void genstringdatetime(String tableName2, String tableName1, String tableName, int sqlCode, String sqlState, Statement statement, String id1, String id2, String id3, String id4){
+		try {
+
+			String insertSQL;
+			String querySQL = "SELECT "+ id1 +" from " + tableName;
+			System.out.println (querySQL) ;
+			java.sql.ResultSet rs = statement.executeQuery ( querySQL ) ;
+			Random x = new Random();
+			ArrayList<String> commands = new ArrayList();
+			while ( rs.next ( ) ) {
+				insertSQL = "INSERT INTO " + tableName2 + " VALUES (";
+				//budget amount
+				insertSQL += rs.getString(1) + " , ";
+				System.out.println ( insertSQL ) ;
+				commands.add(insertSQL);
+			}
+
+			querySQL = "SELECT "+ id2 + "," + id3 + ","+ id4 +" from " + tableName1;
+			System.out.println (querySQL) ;
+			rs = statement.executeQuery ( querySQL ) ;
+//		commands = new ArrayList();
+			int spot = 0;
+			while ( rs.next ( ) ) {
+				if(spot != commands.size()) {
+					String temp = commands.get(spot);
+					temp += "\'" + rs.getString(1) + "\' ,";
+					temp += "\'" + rs.getString(2) + "\' ,";
+					temp += "\'" + rs.getString(3) + "\' )";
+					System.out.println(temp);
+					commands.set(spot, temp);
+					spot++;
+				}
+			}
+
+			for(String s:commands){
+				System.out.println ( s ) ;
+				statement.executeUpdate ( s ) ;
+				System.out.println ( "DONE" ) ;
+			}
+
+
+		} catch (SQLException e)
+		{
+			sqlCode = e.getErrorCode(); // Get SQLCODE
+			sqlState = e.getSQLState(); // Get SQLSTATE
+
+			// Your code to handle errors comes here;
+			// something more meaningful than a print would be good
+			System.out.println("Code: " + sqlCode + "  sqlState: " + sqlState);
+		}
+	}
 
 }
 
