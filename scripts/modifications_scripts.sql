@@ -31,6 +31,11 @@ WHERE t.numrows > 1;
 CREATE TABLE ingredients_temp (LIKE ingredients);
 
 INSERT INTO ingredients_temp (companyname, name , ordered, received, quantity, ingredientname)
-SELECT DISTINCT ON (name, ingredientname) 
-companyname, name, ordered, received, quantity, ingredientname FROM ingredients;
+    SELECT DISTINCT ON (name, ingredientname) 
+    companyname, name, ordered, received, quantity, ingredientname 
+    FROM ingredients;
+    
+DROP TABLE ingredients;
+
+ALTER TABLE ingredients_temp RENAME TO ingredients;
 
