@@ -94,14 +94,14 @@ Statement statement = con.createStatement ( ) ;
 //		geniddatetime("initiate", "event", "reservation", sqlCode, sqlState, statement, "reservationid", "edate", "etime", "reservationid");
 //		genstringdatetime("located", "event", "venue", sqlCode, sqlState, statement, "address", "edate", "etime", "reservationid");
 
-		genidstring( "contains", "dish", "menu", sqlCode, sqlState, statement, "menuid", "name"); //id string
+//		genidstring( "contains", "dish", "menu", sqlCode, sqlState, statement, "menuid", "name"); //id string
 
 		//generate salary amount
 //		gensalary("salary", "staff", "accountpayable", sqlCode, sqlState, statement, "acctid", "employeeid"); //id id
 //		gentwoidtemplate("runs", "account", "staff", sqlCode, sqlState, statement, "employeeid", "acctid"); //id id
 //		gentwoidtemplate("prepares", "staff", "menu", sqlCode, sqlState, statement, "menuid", "employeeid"); //id id
 
-//		geningreds("ingredients", "dish", "supplier", sqlCode, sqlState, statement, "companyname", "name");
+		geningreds("ingredients", "dish", "supplier", sqlCode, sqlState, statement, "companyname", "name");
 
 //		geniddatetime("has", "event", "menu", sqlCode, sqlState, statement, "menuid", "edate", "etime", "reservationid");
 //		genstaffby("staffby", "event", "staff", sqlCode, sqlState, statement, "employeeid", "edate", "etime", "reservationid");
@@ -1141,7 +1141,7 @@ Statement statement = con.createStatement ( ) ;
 		try {
 
 			String insertSQL;
-			String querySQL = "SELECT "+ id1 +" from " + tableName + " where " + id1 + " > 0";
+			String querySQL = "SELECT "+ id1 +" from " + tableName + " where role =\'waitstaff\'";
 			System.out.println (querySQL) ;
 			java.sql.ResultSet rs = statement.executeQuery ( querySQL ) ;
 			Random x = new Random();
@@ -1161,7 +1161,6 @@ Statement statement = con.createStatement ( ) ;
 				resids.add(rs.getString(3));
 				stafflim.add(rs.getInt(4));
 			}
-
 
 			ArrayList<String> commands = new ArrayList();
 			for(int i = 0; i < dates.size(); i++) {
