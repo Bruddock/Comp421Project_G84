@@ -1,7 +1,7 @@
 /*select all accountants tied to a specific event*/
 select staff.employeeid, role, name
 from staff join runs on staff.employeeid = runs.employeeid
-where runs.acctid = 1093;
+where runs.acctid = 304;
 
 /*select unpaid invoices*/
 select name, emailaddress
@@ -13,7 +13,7 @@ where emailaddress in (select clientemail
 
 /*select invoices over the year*/
 select invoiceid, date, amount from invoice
-where extract(year from date) = 2019;
+where extract(year from date) = 2019 and extract(month from date) = 04;
 
 /*select menus that contain at least one dish that is vegetarian.*/
 select menuid from menu
