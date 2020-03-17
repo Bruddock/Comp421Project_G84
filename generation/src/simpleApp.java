@@ -50,8 +50,8 @@ public class simpleApp {
         while(appRun){
             System.out.println("Hello, welcome to the catering co application.");
             System.out.println("Please enter the number corresponding to the option you would like to take.");
-            System.out.println("1 OPTION ONE.");
-            System.out.println("2 OPTION TWO.");
+            System.out.println("1 Update the status of an invoice.");
+            System.out.println("2 Place an order for ingredients.");
             System.out.println("3 OPTION THREE.");
             System.out.println("4 OPTION FOUR.");
             System.out.println("5 OPTION FIVE.");
@@ -60,11 +60,11 @@ public class simpleApp {
             Scanner scanned = new Scanner(System.in);
             String y = scanned.nextLine();
             if(y.equals("1")){
-                System.out.println("working");
+                System.out.println("Selected option 1");
                 runOptionOne(scanned, statement);
             } else if(y.equals("2")){
-                System.out.println("working");
-                runOptionTwo();
+                System.out.println("Selected option 2");
+                runOptionTwo(scanned, statement);
             } else if(y.equals("3")){
                 System.out.println("working");
                 runOptionThree();
@@ -162,13 +162,95 @@ public class simpleApp {
         rs = statement.executeQuery( "select * from invoice where invoiceid = " + invoiceid.get(target));
         rs.next();
         System.out.println("after: " + rs.getInt(4) + " , " + rs.getString(5));
-
-
-
-
         return;
     }
-    public static void runOptionTwo(){
+    public static void runOptionTwo(Scanner scanner, Statement statement) throws SQLException {
+        String insertString;
+        String querySQL = "";
+        System.out.println("Please enter your staff id.");
+        int id = scanner.nextInt();
+        querySQL = "select * from menu where menuid in (select menuid from prepares where employeeid = " + id + ")";
+        System.out.println(querySQL);
+        java.sql.ResultSet rs = statement.executeQuery ( querySQL );
+        ArrayList<String> menus = new ArrayList();
+        ArrayList<Integer> menuId = new ArrayList();
+        while ( rs.next ( ) ) {
+            String currentMenu = "";
+            currentMenu = currentMenu + rs.getInt(1) + ", ";
+            currentMenu = currentMenu + rs.getInt(2) + ", ";
+            currentMenu = currentMenu + rs.getString(3);
+            
+            menus.add(currentMenu);
+            menuId.add(rs.getInt(2));
+        }
+
+        System.out.println("Please select the menu id from below.");
+        for(int i = 0; i < menus.size(); i++){
+            System.out.println((i+1) + " : " + menus.get(i));
+        }
+
+        id = scanner.nextInt();
+        querySQL = "select * from dish where name in (select name from contains where menuid = " + id + ")";
+        System.out.println(querySQL);
+        rs = statement.executeQuery ( querySQL );
+        ArrayList<String> dishes = new ArrayList();
+        ArrayList<String> dishname = new ArrayList();
+        while ( rs.next ( ) ) {
+            String currentDish = "";
+            currentDish = currentDish + rs.getString(1) + ", ";
+            currentDish = currentDish + rs.getTime(2) + ", ";
+            currentDish = currentDish + rs.getString(3) + " , ";
+            currentDish = currentDish + rs.getString(4) + " , ";
+            currentDish = currentDish + rs.getBoolean(5);
+
+            dishes.add(currentDish);
+            dishname.add(rs.getString(1));
+        }
+
+        System.out.println("Please select a dish to order for.");
+        for(int i = 0; i < dishes.size(); i++){
+            System.out.println((i+1) + " : " + dishes.get(i));
+        }
+
+        String targetDish = scanner.next();
+        System.out.println(targetDish);
+
+        System.out.println("Enter the ingredient you wish to order."); //could do with entering a string
+        String ingredientName = scanner.next();
+
+        System.out.println("Enter the quantity.");
+        int quantity = scanner.nextInt();
+
+        //ask if they want it delivered
+        System.out.println("Do you want it delivered?.");
+        boolean b = scanner.nextBoolean();
+
+        System.out.println("Select the company to order from.");
+        querySQL = "select companyName from supplier where delivers = \'" + b + "\'";
+        System.out.println(querySQL);
+        rs = statement.executeQuery ( querySQL );
+        ArrayList<String> companies = new ArrayList();
+        while ( rs.next ( ) ) {
+            companies.add(rs.getString(1));
+        }
+
+        System.out.println("Please select a company to order from.");
+        for(int i = 0; i < companies.size(); i++){
+            System.out.println((i+1) + " : " + companies.get(i));
+        }
+
+        int company = scanner.nextInt();
+
+        System.out.println("Please enter todays date (yyyy-mm-dd).");
+        String today = scanner.next();
+
+        System.out.println("Please enter your desired delivery date (yyyy-mm-dd).");
+        String dDate = scanner.next();
+
+        String insertSQL = "insert into ingredients values (" + companies.get(company) + " , " + targetDish + " , \'" + today + "\' , \'" + dDate + "\' , " + quantity + " , " + ingredientName + ")";
+        System.out.println(insertSQL);
+        statement.executeQuery(insertSQL);
+
 
         return;
     }
