@@ -41,23 +41,39 @@ public class simpleApp {
 
         // This is the url you must use for Postgresql.
         //Note: This url may not valid now !
-        String url = "jdbc:postgresql://comp421.cs.mcgill.ca:5432/cs421";
-        Connection con = DriverManager.getConnection (url,"cs421g84", "reduce2084") ;
-        Statement statement = con.createStatement ( ) ;
+//        String url = "jdbc:postgresql://comp421.cs.mcgill.ca:5432/cs421";
+//        Connection con = DriverManager.getConnection (url,"cs421g84", "reduce2084") ;
+//        Statement statement = con.createStatement ( ) ;
 
         boolean appRun = true;
         while(appRun){
             System.out.println("Hello, welcome to the catering co application.");
             System.out.println("Please enter the number corresponding to the option you would like to take.");
-            System.out.println("1 fuck around.");
-            System.out.println("6 quit fuck around.");
+            System.out.println("1 OPTION ONE.");
+            System.out.println("2 OPTION TWO.");
+            System.out.println("3 OPTION THREE.");
+            System.out.println("4 OPTION FOUR.");
+            System.out.println("5 OPTION FIVE.");
+            System.out.println("6 quit.");
 
             Scanner myObj = new Scanner(System.in);
-            int y = myObj.nextInt();
-            if(y == 1){
+            String y = myObj.nextLine();
+            if(y.equals("1")){
                 System.out.println("working");
                 runOptionOne();
-            } else if (y == 6){
+            } else if(y.equals("2")){
+                System.out.println("working");
+                runOptionTwo();
+            } else if(y.equals("3")){
+                System.out.println("working");
+                runOptionThree();
+            } else if(y.equals("4")){
+                System.out.println("working");
+                runOptionFour();
+            } else if(y.equals("5")){
+                System.out.println("working");
+                runOptionFive();
+            } else if (y.equals("6")){
                 appRun = false;
             }
 
@@ -67,13 +83,30 @@ public class simpleApp {
         }
 
         // Finally but importantly close the statement and connection
-        statement.close ( ) ;
-        con.close ( ) ;
+//        statement.close ( ) ;
+//        con.close ( ) ;
 
     }
 
 
     public static void runOptionOne(){
+
+        return;
+    }
+    public static void runOptionTwo(){
+
+        return;
+    }
+    public static void runOptionThree(){
+
+        return;
+    }
+    public static void runOptionFour(){
+
+        return;
+    }
+    public static void runOptionFive(){
+
         return;
     }
 
