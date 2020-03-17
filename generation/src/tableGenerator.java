@@ -49,30 +49,12 @@ class simpleJDBC
     System.out.println("Class not found");
     }
 
-// This is the url you must use for Postgresql.
-//Note: This url may not valid now !
 String url = "jdbc:postgresql://comp421.cs.mcgill.ca:5432/cs421";
 Connection con = DriverManager.getConnection (url,"cs421g84", "reduce2084") ;
-//Connection con = DriverManager.getConnection (url,"bruddo", "x@i&nr*o") ;
 Statement statement = con.createStatement ( ) ;
 
-	// Creating a table
-//	try {
-//	    String createSQL = "CREATE TABLE " + tableName + " (id INTEGER, name VARCHAR (25)) ";
-//	    System.out.println (createSQL ) ;
-//	    statement.executeUpdate (createSQL ) ;
-//	    System.out.println ("DONE");
-//	}catch (SQLException e)
-//            {
-//                sqlCode = e.getErrorCode(); // Get SQLCODE
-//                sqlState = e.getSQLState(); // Get SQLSTATE
-//
-//                // Your code to handle errors comes here;
-//                // something more meaningful than a print would be good
-//                System.out.println("Code: " + sqlCode + "  sqlState: " + sqlState);
-//            }
 
-	// Inserting Data into the table
+	// Inserting Data into the table: uncomment one of the commands below to test the method.
 
 //		genAcct("account",sqlCode, sqlState, statement);
 //		genCustomer("customer",sqlCode, sqlState, statement);
@@ -89,14 +71,13 @@ Statement statement = con.createStatement ( ) ;
 //		geninvoice("invoice", sqlCode, sqlState, statement);
 
 //		genidstring( "reserves", "customer", "reservation", sqlCode, sqlState, statement,"reservationid", "emailaddress"); //id string
-		//		genpayment("reservationpayment", "invoice", "accountreceivable", "customer", sqlCode, sqlState, statement, "emailaddress", "acctid", "invoiceid");
+//		genpayment("reservationpayment", "invoice", "accountreceivable", "customer", sqlCode, sqlState, statement, "emailaddress", "acctid", "invoiceid");
 //		genpayment("supplypayment", "invoice", "accountpayable", "supplier", sqlCode, sqlState, statement, "companyname", "acctid", "invoiceid");
 //		geniddatetime("initiate", "event", "reservation", sqlCode, sqlState, statement, "reservationid", "edate", "etime", "reservationid");
 //		genstringdatetime("located", "event", "venue", sqlCode, sqlState, statement, "address", "edate", "etime", "reservationid");
 
 //		genidstring( "contains", "dish", "menu", sqlCode, sqlState, statement, "menuid", "name"); //id string
 
-		//generate salary amount
 //		gensalary("salary", "staff", "accountpayable", sqlCode, sqlState, statement, "acctid", "employeeid"); //id id
 //		gentwoidtemplate("runs", "account", "staff", sqlCode, sqlState, statement, "employeeid", "acctid"); //id id
 //		gentwoidtemplate("prepares", "staff", "menu", sqlCode, sqlState, statement, "menuid", "employeeid"); //id id
@@ -105,50 +86,6 @@ Statement statement = con.createStatement ( ) ;
 
 //		geniddatetime("has", "event", "menu", sqlCode, sqlState, statement, "menuid", "edate", "etime", "reservationid");
 //		genstaffby("staffby", "event", "staff", sqlCode, sqlState, statement, "employeeid", "edate", "etime", "reservationid");
-
-		// Querying a table
-//	try {
-//	    String querySQL = "SELECT id, name from " + tableName + " WHERE NAME = \'Vicki\'";
-//	    System.out.println (querySQL) ;
-//	    java.sql.ResultSet rs = statement.executeQuery ( querySQL ) ;
-//	    while ( rs.next ( ) ) {
-//		int id = rs.getInt ( 1 ) ;
-//		String name = rs.getString (2);
-//		System.out.println ("id:  " + id);
-//		System.out.println ("name:  " + name);
-//	    }
-//	    System.out.println ("DONE");
-//	} catch (SQLException e)
-//	    {
-//		sqlCode = e.getErrorCode(); // Get SQLCODE
-//		sqlState = e.getSQLState(); // Get SQLSTATE
-//
-//		// Your code to handle errors comes here;
-//		// something more meaningful than a print would be good
-//		System.out.println("Code: " + sqlCode + "  sqlState: " + sqlState);
-//	    }
-
-	//Updating a table
-//	try {
-//	    String updateSQL = "UPDATE " + tableName + " SET NAME = \'Mimi\' WHERE id = 3";
-//	    System.out.println(updateSQL);
-//	    statement.executeUpdate(updateSQL);
-//	    System.out.println("DONE");
-//
-//	    // Dropping a table
-////	    String dropSQL = "DROP TABLE " + tableName;
-////	    System.out.println ( dropSQL ) ;
-////	    statement.executeUpdate ( dropSQL ) ;
-////	    System.out.println ("DONE");
-//	} catch (SQLException e)
-//	    {
-//		sqlCode = e.getErrorCode(); // Get SQLCODE
-//		sqlState = e.getSQLState(); // Get SQLSTATE
-//
-//		// Your code to handle errors comes here;
-//		// something more meaningful than a print would be good
-//		System.out.println("Code: " + sqlCode + "  sqlState: " + sqlState);
-//	    }
 
 
 	// Finally but importantly close the statement and connection
@@ -161,7 +98,6 @@ Statement statement = con.createStatement ( ) ;
     	String insertSQL;
 		for(int i=0; i<100; i++){
 			insertSQL = "INSERT INTO " + tableName + " VALUES (";
-//			'2013-05-15', '2018-06-08', 'C.Krebs@fakemail.com', 6475550311, 'Charlene Krebs'
 			Random x = new Random();
 			int year = 2013 + x.nextInt(7);
 			int month = 1 + x.nextInt(12);
