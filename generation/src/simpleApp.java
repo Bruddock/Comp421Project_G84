@@ -1,3 +1,4 @@
+import javax.sound.midi.SysexMessage;
 import java.sql.* ;
 import java.sql.DriverManager;
 import java.sql.Connection;
@@ -41,9 +42,9 @@ public class simpleApp {
 
         // This is the url you must use for Postgresql.
         //Note: This url may not valid now !
-//        String url = "jdbc:postgresql://comp421.cs.mcgill.ca:5432/cs421";
-//        Connection con = DriverManager.getConnection (url,"cs421g84", "reduce2084") ;
-//        Statement statement = con.createStatement ( ) ;
+        String url = "jdbc:postgresql://comp421.cs.mcgill.ca:5432/cs421";
+        Connection con = DriverManager.getConnection (url,"cs421g84", "reduce2084") ;
+        Statement statement = con.createStatement ( ) ;
 
         boolean appRun = true;
         while(appRun){
@@ -56,11 +57,11 @@ public class simpleApp {
             System.out.println("5 OPTION FIVE.");
             System.out.println("6 quit.");
 
-            Scanner myObj = new Scanner(System.in);
-            String y = myObj.nextLine();
+            Scanner scanned = new Scanner(System.in);
+            String y = scanned.nextLine();
             if(y.equals("1")){
                 System.out.println("working");
-                runOptionOne();
+                runOptionOne(scanned, statement);
             } else if(y.equals("2")){
                 System.out.println("working");
                 runOptionTwo();
@@ -83,13 +84,87 @@ public class simpleApp {
         }
 
         // Finally but importantly close the statement and connection
-//        statement.close ( ) ;
-//        con.close ( ) ;
+        statement.close ( ) ;
+        con.close ( ) ;
 
     }
 
 
-    public static void runOptionOne(){
+    public static void runOptionOne(Scanner scanner, Statement statement) throws SQLException {
+        String insertString;
+        String querySQL = "select emailaddress from customer where emailaddress LIKE \'C__@%\' OR emailaddress LIKE \'C_@%\'";
+//        select distinct emailaddress from customerinvoices where status = 'under review' order by emailaddress
+        java.sql.ResultSet rs = statement.executeQuery ( querySQL ) ;
+        ArrayList<String> addresses = new ArrayList();
+        while ( rs.next ( ) ) {
+            addresses.add(rs.getString(1));
+        }
+
+        for(int i = 0; i < addresses.size(); i++){
+            System.out.println(i + " : " + addresses.get(i));
+        }
+
+        System.out.println("To view all current invoices.");
+        System.out.println("Please select the target email address by entering the corresponding number");
+        int response = scanner.nextInt();
+        System.out.println(addresses.get(response));
+
+        querySQL = "select * from customerinvoices where emailaddress = \'" + addresses.get(response) + "\'";
+        rs = statement.executeQuery ( querySQL );
+
+        ArrayList<String> invoices = new ArrayList();
+        ArrayList<Integer> invoiceid = new ArrayList();
+        while ( rs.next ( ) ) {
+            String currentIndex = "";
+            if(!rs.getString(2).equals("null")){
+                currentIndex = currentIndex + rs.getString(1) + ", ";
+                currentIndex = currentIndex + rs.getDate(2) + ", ";
+                currentIndex = currentIndex + rs.getInt(3) + ", ";
+                currentIndex = currentIndex + rs.getInt(4) + ", ";
+                currentIndex = currentIndex + rs.getString(5) + ", ";
+                currentIndex = currentIndex + rs.getInt(6);
+            }
+            invoices.add(currentIndex);
+            invoiceid.add(rs.getInt(4));
+        }
+
+        if(invoices.size() == 0) System.out.println("This customer has no current invoices");
+
+        for(int i = 0; i < invoices.size(); i++){
+            System.out.println((i+1) + " : " + invoices.get(i));
+        }
+
+        System.out.println("Please select invoice you wish to alter");
+        int target = scanner.nextInt();
+        System.out.println(invoices.get(target));
+
+        System.out.println("Please select the updated status by entering the corresponding number.");
+        System.out.println("1: under review");
+        System.out.println("2: accepted");
+        System.out.println("3: rejected");
+        int change = scanner.nextInt();
+        System.out.println(change);
+
+        String status = "";
+        switch(change){
+            case 1: status = "under review"; break;
+            case 2: status = "accepted"; break;
+            case 3: status = "rejected"; break;
+            default: break;
+        }
+
+        rs = statement.executeQuery( "select * from invoice where invoiceid = " + invoiceid.get(target));
+        rs.next();
+        System.out.println("before: " + rs.getInt(4) + " , " + rs.getString(5));
+        insertString = "update invoice set status = \'" + status + "\' where invoiceid = " + invoiceid.get(target);
+        System.out.println(insertString);
+        statement.executeUpdate ( insertString );
+        rs = statement.executeQuery( "select * from invoice where invoiceid = " + invoiceid.get(target));
+        rs.next();
+        System.out.println("after: " + rs.getInt(4) + " , " + rs.getString(5));
+
+
+
 
         return;
     }
