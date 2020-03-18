@@ -3,6 +3,7 @@ import java.sql.DriverManager;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Random;
 import java.util.Scanner;
 
 
@@ -49,7 +50,7 @@ public class simpleApp {
             System.out.println("2: Place an order for ingredients.");
             System.out.println("3: Cancel a reservation.");
             System.out.println("4: View or modify a menu.");
-            System.out.println("5: OPTION FIVE.");
+            System.out.println("5: Create a customer or supplier invoice.");
             System.out.println("6: QUIT.");
 
             Scanner scanned = new Scanner(System.in);
@@ -68,12 +69,12 @@ public class simpleApp {
                     runOptionThree(scanned, statement);
                     break;
                 case "4":
-                    System.out.println("working");
+                    System.out.println("Selected option 4");
                     runOptionFour(scanned, statement);
                     break;
                 case "5":
-                    System.out.println("working");
-                    runOptionFive();
+                    System.out.println("Selected option 5");
+                    runOptionFive(scanned, statement);
                     break;
                 case "6":
                     appRun = false;
@@ -229,13 +230,11 @@ public class simpleApp {
             querySQL = "select * from menu where menuid in (select menuid from prepares where employeeid = " + id + ")";
             System.out.println(querySQL);
             rs = statement.executeQuery(querySQL);
-
             while (rs.next()) {
                 String currentMenu = "";
                 currentMenu = currentMenu + rs.getInt(1) + ", ";
                 currentMenu = currentMenu + rs.getInt(2) + ", ";
                 currentMenu = currentMenu + rs.getString(3);
-
                 menus.add(currentMenu);
                 menuId.add(rs.getInt(2));
             }
@@ -673,8 +672,253 @@ public class simpleApp {
         }
     }
 
-    public static void runOptionFive() {
+    public static void runOptionFive(Scanner scanner, Statement statement) {
+        String holder;
+        int response;
+        while(true){
+            System.out.println("Please select the type of invoice that you would like to make.");
+            System.out.println("1: Ingredients purchase");
+            System.out.println("2: ReservationPayment");
+            holder = scanner.nextLine();
+            try{
+                response = Integer.parseInt(holder);
+                if(response == 1){
+                    createIngredientInvoice(scanner, statement);
+                    break;
+                } else if(response == 2){
+                    createReservationInvoice(scanner, statement);
+                    break;
+                } else {
+                    System.out.println("Please select a valid option.");
+                }
+            } catch (Exception NumberFormatException){
+                System.out.println("Please select a number from the list below.");
+            }
+        }
+        System.out.println("Returning to the main menu.");
     }
+
+    private static void createIngredientInvoice(Scanner scanner, Statement statement) throws SQLException {
+        String querySQL = "select acctid from accountpayable";
+        java.sql.ResultSet rs = statement.executeQuery(querySQL);
+        ArrayList<Integer> accts = new ArrayList<>();
+        while (rs.next()) {
+            accts.add(rs.getInt(1));
+        }
+        int response;
+        String holder;
+        while(true){
+            System.out.println("Please select an account from the following list.");
+            for(int i = 0; i < accts.size(); i ++){
+                System.out.println(i + " : " + accts.get(i));
+            }
+            holder = scanner.nextLine();
+            try{
+                response = Integer.parseInt(holder);
+                if(response >= 0 && response < accts.size()) break;
+                else System.out.println("Please enter a number from the list below.");
+            } catch (Exception NumberFormatException){
+                System.out.println("Please enter a number from the list below.");
+            }
+        }
+        int accountId = accts.get(response);
+        boolean rejectedcheck;
+        while(true){
+            System.out.println("Who would you like to make this invoice to?");
+            System.out.println("1: A supplier with an outstanding rejected invoice with this account.");
+            System.out.println("2: A supplier associated with this account");
+            holder = scanner.nextLine();
+            try{
+                response = Integer.parseInt(holder);
+                if(response == 1){
+                    System.out.println(response);
+                    rejectedcheck = true;
+                    break;
+                } else if(response == 2){
+                    rejectedcheck = false;
+                    break;
+                } else {
+                    System.out.println("Please select a valid option.");
+                }
+            } catch (Exception NumberFormatException){
+                System.out.println("Please select a number from the list below.");
+            }
+        }
+
+        if(rejectedcheck){
+            querySQL = "select suppliername from invoice where descriptionofservices = 'ingredients purchase' AND status = 'rejected' AND acctid = " + accountId;
+        } else {
+            querySQL = "select suppliername from invoice where descriptionofservices = 'ingredients purchase' AND acctid = " + accountId;
+        }
+        System.out.println(querySQL);
+        rs = statement.executeQuery(querySQL);
+        ArrayList<String> addresses = new ArrayList<>();
+        while (rs.next()) {
+            addresses.add(rs.getString(1));
+        }
+
+        while(true){
+            for(int i = 0; i < addresses.size(); i++){
+                System.out.println(i + " : " + addresses.get(i));
+            }
+            System.out.println("Please select the supplier by entering the corresponding number");
+            holder = scanner.nextLine();
+            try {
+                response = Integer.parseInt(holder);
+                if (response >= 0 && response < addresses.size()) {
+                    System.out.println(addresses.get(response));
+                    break;
+                } else {
+                    System.out.println("Please enter a valid number.");
+                }
+            } catch (Exception NumberFormatException) {
+                System.out.println("Please enter a valid number.");
+            }
+        }
+
+        String supplier = addresses.get(response);
+
+        while(true){
+            System.out.println("Please enter the amount for the invoice.");
+            holder = scanner.nextLine();
+            try{
+                response = Integer.parseInt(holder);
+                if(response < 5000){
+                    break;
+                } else {
+                    System.out.println("That amount exceeds the accepted limit for a single invoice.");
+                    System.out.println("Please enter another amount.");
+                }
+            } catch (Exception NumberFormatException){
+                System.out.println("Please enter a valid number.");
+            }
+        }
+
+        int amount = response;
+
+        String today = "" + java.time.LocalDateTime.now();
+        today = today.substring(0, 10);
+
+        Random x = new Random();
+        int invoiceid = x.nextInt(10000) + 30000;
+
+
+        querySQL = "insert into invoice Values( '" + today + "' , " + amount + " , 'ingredients purchase' , " + invoiceid + " , 'pending' , null , '" + supplier + "')";
+        System.out.println(querySQL);
+        statement.executeUpdate(querySQL);
+
+    }
+
+    private static void createReservationInvoice(Scanner scanner, Statement statement) throws SQLException {
+        String querySQL = "select acctid from accountreceivable";
+        java.sql.ResultSet rs = statement.executeQuery(querySQL);
+        ArrayList<Integer> accts = new ArrayList<>();
+        while (rs.next()) {
+            accts.add(rs.getInt(1));
+        }
+        int response;
+        String holder;
+        while(true){
+            System.out.println("Please select an account from the following list.");
+            for(int i = 0; i < accts.size(); i ++){
+                System.out.println(i + " : " + accts.get(i));
+            }
+            holder = scanner.nextLine();
+            try{
+                response = Integer.parseInt(holder);
+                if(response >= 0 && response < accts.size()) break;
+                else System.out.println("Please enter a number from the list below.");
+            } catch (Exception NumberFormatException){
+                System.out.println("Please enter a number from the list below.");
+            }
+        }
+        int accountId = accts.get(response);
+        boolean rejectedcheck;
+        while(true){
+            System.out.println("Who would you like to make this invoice to?");
+            System.out.println("1: A customer with an outstanding rejected invoice with this account.");
+            System.out.println("2: A customer associated with this account");
+            holder = scanner.nextLine();
+            try{
+                response = Integer.parseInt(holder);
+                if(response == 1){
+                    System.out.println(response);
+                    rejectedcheck = true;
+                    break;
+                } else if(response == 2){
+                    rejectedcheck = false;
+                    break;
+                } else {
+                    System.out.println("Please select a valid option.");
+                }
+            } catch (Exception NumberFormatException){
+                System.out.println("Please select a number from the list below.");
+            }
+        }
+
+        if(rejectedcheck){
+            querySQL = "select clientemail from invoice where descriptionofservices = 'reservation payment' AND status = 'rejected' AND acctid = " + accountId;
+        } else {
+            querySQL = "select clientemail from invoice where descriptionofservices = 'reservation payment' AND acctid = " + accountId;
+        }
+        System.out.println(querySQL);
+        rs = statement.executeQuery(querySQL);
+        ArrayList<String> addresses = new ArrayList<>();
+        while (rs.next()) {
+            addresses.add(rs.getString(1));
+        }
+
+        while(true){
+            for(int i = 0; i < addresses.size(); i++){
+                System.out.println(i + " : " + addresses.get(i));
+            }
+            System.out.println("Please select the clients email by entering the corresponding number");
+            holder = scanner.nextLine();
+            try {
+                response = Integer.parseInt(holder);
+                if (response >= 0 && response < addresses.size()) {
+                    System.out.println(addresses.get(response));
+                    break;
+                } else {
+                    System.out.println("Please enter a valid number.");
+                }
+            } catch (Exception NumberFormatException) {
+                System.out.println("Please enter a valid number.");
+            }
+        }
+
+        String clientmail = addresses.get(response);
+
+        while(true){
+            System.out.println("Please enter the amount for the invoice.");
+            holder = scanner.nextLine();
+            try{
+                response = Integer.parseInt(holder);
+                if(response < 5000){
+                    break;
+                } else {
+                    System.out.println("That amount exceeds the accepted limit for a single invoice.");
+                    System.out.println("Please enter another amount.");
+                }
+            } catch (Exception NumberFormatException){
+                System.out.println("Please enter a valid number.");
+            }
+        }
+
+        int amount = response;
+
+        String today = "" + java.time.LocalDateTime.now();
+        today = today.substring(0, 10);
+
+        Random x = new Random();
+        int invoiceid = x.nextInt(10000) + 30000;
+
+
+        querySQL = "insert into invoice Values( '" + today + "' , " + amount + " , 'ingredients purchase' , " + invoiceid + " , 'pending' , '" + clientmail + "' , null)";
+        System.out.println(querySQL);
+        statement.executeUpdate(querySQL);
+    }
+
 
     public static void printArrayList(ArrayList a) {
         for (int i = 0; i < a.size(); i++) {
