@@ -97,9 +97,9 @@ public class simpleApp {
 
     public static void runOptionOne(Scanner scanner, Statement statement) throws SQLException {
         String insertString;
-        String querySQL = "select emailaddress from customer where emailaddress LIKE \'C__@%\' OR emailaddress LIKE \'C_@%\'";
+        String querySQL = "select emailaddress from customer where emailaddress LIKE 'C__@%' OR emailaddress LIKE 'C_@%'";
         java.sql.ResultSet rs = statement.executeQuery ( querySQL ) ;
-        ArrayList<String> addresses = new ArrayList();
+        ArrayList<String> addresses = new ArrayList<>();
         while ( rs.next ( ) ) {
             addresses.add(rs.getString(1));
         }
@@ -125,11 +125,11 @@ public class simpleApp {
             }
         }
 
-        querySQL = "select * from customerinvoices where emailaddress = \'" + addresses.get(response) + "\'";
+        querySQL = "select * from customerinvoices where emailaddress = '" + addresses.get(response) + "'";
         rs = statement.executeQuery ( querySQL );
 
-        ArrayList<String> invoices = new ArrayList();
-        ArrayList<Integer> invoiceid = new ArrayList();
+        ArrayList<String> invoices = new ArrayList<>();
+        ArrayList<Integer> invoiceid = new ArrayList<>();
         while ( rs.next ( ) ) {
             String currentIndex = "";
             if(!rs.getString(2).equals("null")){
@@ -143,7 +143,6 @@ public class simpleApp {
             invoices.add(currentIndex);
             invoiceid.add(rs.getInt(4));
         }
-
         if(invoices.size() == 0) {
             System.out.println("This customer has no current invoices");
         }
@@ -151,15 +150,14 @@ public class simpleApp {
         int target = -1;
         while(true) {
             for (int i = 0; i < invoices.size(); i++) {
-                System.out.println((i + 1) + " : " + invoices.get(i));
+                System.out.println((i) + " : " + invoices.get(i));
             }
             System.out.println("Please select invoice you wish to alter");
-
             holder = scanner.nextLine();
             try {
                 target = Integer.parseInt(holder);
                 if (target > 0 && target< invoices.size()) {
-                    System.out.println(invoices.get(target - 1));
+                    System.out.println(invoices.get(target));
                     break;
                 } else {
                     System.out.println("Please enter a valid number.");
@@ -175,7 +173,6 @@ public class simpleApp {
             System.out.println("1: under review");
             System.out.println("2: accepted");
             System.out.println("3: rejected");
-
             holder = scanner.nextLine();
             try {
                 change = Integer.parseInt(holder);
@@ -201,41 +198,54 @@ public class simpleApp {
         rs = statement.executeQuery( "select * from invoice where invoiceid = " + invoiceid.get(target));
         rs.next();
         System.out.println("before: " + rs.getInt(4) + " , " + rs.getString(5));
-        insertString = "update invoice set status = \'" + status + "\' where invoiceid = " + invoiceid.get(target);
+        insertString = "update invoice set status = '" + status + "' where invoiceid = " + invoiceid.get(target);
         System.out.println(insertString);
         statement.executeUpdate ( insertString );
         rs = statement.executeQuery( "select * from invoice where invoiceid = " + invoiceid.get(target));
         rs.next();
         System.out.println("after: " + rs.getInt(4) + " , " + rs.getString(5));
-        return;
+        System.out.println("Returning to main menu.");
     }
 
     public static void runOptionTwo(Scanner scanner, Statement statement) throws SQLException {
         String querySQL = "";
-        System.out.println("Please enter your staff id.");
-        int id = scanner.nextInt();
-        querySQL = "select * from menu where menuid in (select menuid from prepares where employeeid = " + id + ")";
-        System.out.println(querySQL);
-        java.sql.ResultSet rs = statement.executeQuery ( querySQL );
-        ArrayList<String> menus = new ArrayList();
-        ArrayList<Integer> menuId = new ArrayList();
-        while ( rs.next ( ) ) {
-            String currentMenu = "";
-            currentMenu = currentMenu + rs.getInt(1) + ", ";
-            currentMenu = currentMenu + rs.getInt(2) + ", ";
-            currentMenu = currentMenu + rs.getString(3);
-            
-            menus.add(currentMenu);
-            menuId.add(rs.getInt(2));
+        int id = -1;
+        ArrayList<String> menus = new ArrayList<>();
+        ArrayList<Integer> menuId = new ArrayList<>();
+        java.sql.ResultSet rs;
+        String holder = "";
+        while(true) {
+            System.out.println("Please enter your staff id.");
+            holder = scanner.nextLine();
+            try{
+                id = Integer.parseInt(holder);
+            } catch (Exception NumberFormatException){
+                continue;
+            }
+            querySQL = "select * from menu where menuid in (select menuid from prepares where employeeid = " + id + ")";
+            System.out.println(querySQL);
+            rs = statement.executeQuery(querySQL);
+            while (rs.next()) {
+                String currentMenu = "";
+                currentMenu = currentMenu + rs.getInt(1) + ", ";
+                currentMenu = currentMenu + rs.getInt(2) + ", ";
+                currentMenu = currentMenu + rs.getString(3);
+                menus.add(currentMenu);
+                menuId.add(rs.getInt(2));
+            }
+            if (menus.size() == 0) {
+                System.out.println("The id that you entered either doesn't exist or isn't in charge of preparing menus.");
+            } else {
+                break;
+            }
         }
 
-        String holder = "";
         while(true){
             System.out.println("Please select the menu id from below.");
             for(int i = 0; i < menus.size(); i++){
                 System.out.println((i) + " : " + menus.get(i));
             }
-            scanner.nextLine();
+//            scanner.nextLine();
             holder = scanner.nextLine();
             try {
                 id = Integer.parseInt(holder);
@@ -254,8 +264,8 @@ public class simpleApp {
         querySQL = "select * from dish where name in (select name from contains where menuid = " + menuId.get(id) + ")";
         System.out.println(querySQL);
         rs = statement.executeQuery ( querySQL );
-        ArrayList<String> dishes = new ArrayList();
-        ArrayList<String> dishname = new ArrayList();
+        ArrayList<String> dishes = new ArrayList<>();
+        ArrayList<String> dishname = new ArrayList<>();
         while ( rs.next ( ) ) {
             String currentDish = "";
             currentDish = currentDish + rs.getString(1) + ", ";
@@ -263,7 +273,6 @@ public class simpleApp {
             currentDish = currentDish + rs.getString(3) + " , ";
             currentDish = currentDish + rs.getString(4) + " , ";
             currentDish = currentDish + rs.getBoolean(5);
-
             dishes.add(currentDish);
             dishname.add(rs.getString(1));
         }
@@ -325,10 +334,10 @@ public class simpleApp {
         }
 
         System.out.println("Select the company to order from.");
-        querySQL = "select companyName from supplier where delivers = \'" + b + "\'";
+        querySQL = "select companyName from supplier where delivers = '" + b + "'";
         System.out.println(querySQL);
         rs = statement.executeQuery ( querySQL );
-        ArrayList<String> companies = new ArrayList();
+        ArrayList<String> companies = new ArrayList<>();
         while ( rs.next ( ) ) {
             companies.add(rs.getString(1));
         }
@@ -359,7 +368,6 @@ public class simpleApp {
 
         String dDate = today;
         while(true){
-            dDate = today;
             try {
                 System.out.println("Please enter your desired delivery year 2020/2021/2022.");
                 int year = Integer.parseInt(scanner.nextLine());
@@ -377,37 +385,48 @@ public class simpleApp {
                 System.out.println("Please enter a valid date within the next year.");
             }
         }
-
-        String insertSQL = "insert into ingredients values (\'" + companies.get(company) + "\' , \'" + targetDish + "\' , \'" + today + "\' , \'" + dDate + "\' , " + quantity + " , \'" + ingredientName + "\')";
+        String insertSQL = "insert into ingredients values ('" + companies.get(company) + "' , '" + targetDish + "' , '" + today + "' , '" + dDate + "' , " + quantity + " , '" + ingredientName + "')";
         System.out.println(insertSQL);
         statement.executeUpdate(insertSQL);
-
-
+        System.out.println("Returning to main menu.");
     }
 
     public static void runOptionThree(Scanner scanner, Statement statement) throws SQLException {
 
         String insertString;
-        String querySQL = "select emailaddress from customer where emailaddress LIKE \'C__@%\' OR emailaddress LIKE \'C_@%\'";
+        String querySQL = "select emailaddress from customer where emailaddress LIKE 'C__@%' OR emailaddress LIKE 'C_@%'";
         java.sql.ResultSet rs = statement.executeQuery ( querySQL ) ;
-        ArrayList<String> addresses = new ArrayList();
+        ArrayList<String> addresses = new ArrayList<>();
         while ( rs.next ( ) ) {
             addresses.add(rs.getString(1));
         }
-
-        for(int i = 0; i < addresses.size(); i++){
-            System.out.println(i + " : " + addresses.get(i));
+        int response = -1;
+        String holder = "";
+        while(true) {
+            for (int i = 0; i < addresses.size(); i++) {
+                System.out.println(i + " : " + addresses.get(i));
+            }
+            System.out.println("To view all current reservations.");
+            System.out.println("Please select your email address by entering the corresponding number");
+            holder = scanner.nextLine();
+            try {
+                response = Integer.parseInt(holder);
+                if (response >= 0 && response < addresses.size()) {
+                    System.out.println(addresses.get(response));
+                    break;
+                } else {
+                    System.out.println("Please enter a valid number.");
+                }
+            } catch (Exception NumberFormatException){
+                System.out.println("Please enter a valid number.");
+            }
         }
 
-        System.out.println("To view all current reservations.");
-        System.out.println("Please select your email address by entering the corresponding number");
-        int response = scanner.nextInt();
-        System.out.println(addresses.get(response));
-
-        querySQL = "select * from reservation where clientemail = \'" + addresses.get(response) + "\'";
+        querySQL = "select * from reservation where clientemail = '" + addresses.get(response) + "'";
         rs = statement.executeQuery ( querySQL );
 
-        ArrayList<String> reservations = new ArrayList();
+        ArrayList<String> reservations = new ArrayList<>();
+        ArrayList<Integer> reservationids = new ArrayList<>();
         while ( rs.next ( ) ) {
             String currentIndex = "";
             if(!rs.getString(2).equals("null")){
@@ -417,24 +436,35 @@ public class simpleApp {
                 currentIndex = currentIndex + rs.getString(4);
             }
             reservations.add(currentIndex);
+            reservationids.add(rs.getInt(3));
         }
 
         if(reservations.size() == 0) System.out.println("This customer has no current reservations");
+        int resId = -1;
+        while(true) {
+            for(int i = 0; i < reservations.size(); i++){
+                System.out.println((i) + " : " + reservations.get(i));
+            }
 
-        for(int i = 0; i < reservations.size(); i++){
-            System.out.println((i+1) + " : " + reservations.get(i));
+            System.out.println("Please select the reservation you wish to alter");
+            holder = scanner.nextLine();
+            try {
+                resId = Integer.parseInt(holder);
+                if (resId >= 0 && resId < reservations.size()) {
+                    System.out.println(reservationids.get(resId));
+                    break;
+                } else {
+                    System.out.println("Please enter a valid number.");
+                }
+            } catch (Exception NumberFormatException){
+                System.out.println("Please enter a valid number.");
+            }
         }
 
-        System.out.println("Please select the reservation you wish to alter");
-        int resId = scanner.nextInt();
-        System.out.println(resId);
-
-        querySQL = "select * from event where reservationid = " + resId;
+        querySQL = "select * from event where reservationid = " + reservationids.get(resId);
         rs = statement.executeQuery ( querySQL );
 
-        ArrayList<String> events = new ArrayList();
-        String date = "";
-        String time = "";
+        ArrayList<String> events = new ArrayList<>();
         while ( rs.next ( ) ) {
             String currentIndex = "";
             currentIndex = currentIndex + rs.getBoolean(1) + ", ";
@@ -447,42 +477,46 @@ public class simpleApp {
             currentIndex = currentIndex + rs.getString(8) + ", ";
             currentIndex = currentIndex + rs.getInt(9);
             events.add(currentIndex);
-            date  = rs.getString(3);
-            time = rs.getString(6);
-
         }
 
         if(events.size() == 0) System.out.println("this reservation has no known events");
 
-        for(int i = 0; i < events.size(); i++){
-            System.out.println((i+1) + " : " + events.get(i));
+        boolean cancelresponse;
+        while(true){
+            System.out.println("Would you like to cancel this event. [y/n]");
+            for(int i = 0; i < events.size(); i++){
+                System.out.println((i+1) + " : " + events.get(i));
+            }
+            holder = scanner.nextLine();
+            if(holder.equals("y")) {
+                cancelresponse = true;
+                break;
+            } else if(holder.equals("n")) {
+                cancelresponse = false;
+                break;
+            } else {
+                System.out.println("Please enter y or n");
+            }
         }
-
-        System.out.println("Would you like to cancel this event.");
-        boolean cancelresponse = scanner.nextBoolean();
         if(cancelresponse){
             //has (menu)
-            querySQL = "select * from has where reservationid = " + resId;
             insertString = "delete from has where reservationid = " + resId;
             System.out.println(insertString);
             statement.executeUpdate ( insertString );
             //staffed by
-            querySQL = "select * from staffby where reservationid = " + resId;
             insertString = "delete from staffby where reservationid = " + resId;
             System.out.println(insertString);
             statement.executeUpdate ( insertString );
             //event
-            querySQL = "select * from event where reservationid = " + resId;
             insertString = "delete from event where reservationid = " + resId;
             System.out.println(insertString);
             statement.executeUpdate ( insertString );
             //reservation
-            querySQL = "select * from reservation where reservationid = " + resId;
             insertString = "delete from reservation where reservationid = " + resId;
             System.out.println(insertString);
             statement.executeUpdate ( insertString );
         } else {
-            System.out.println("Would you like to access another reservation?");
+            System.out.println("Reservation was not canceled, returning to main menu.");
         }
 
     }
@@ -495,5 +529,10 @@ public class simpleApp {
         return;
     }
 
+    public static void printArrayList(ArrayList a){
+        for(int i = 0; i < a.size(); i++){
+            System.out.println((i) + " : " + a.get(i));
+        }
+    }
 
 }
