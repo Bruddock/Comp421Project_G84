@@ -1,6 +1,3 @@
-import org.postgresql.util.PSQLException;
-
-import javax.sound.midi.SysexMessage;
 import java.sql.*;
 import java.sql.DriverManager;
 import java.sql.Connection;
@@ -103,8 +100,8 @@ public class simpleApp {
         while (rs.next()) {
             addresses.add(rs.getString(1));
         }
-        int response = -1;
-        String holder = "";
+        int response;
+        String holder;
         while (true) {
             for (int i = 0; i < addresses.size(); i++) {
                 System.out.println(i + " : " + addresses.get(i));
@@ -147,7 +144,7 @@ public class simpleApp {
             System.out.println("This customer has no current invoices");
         }
 
-        int target = -1;
+        int target;
         while (true) {
             for (int i = 0; i < invoices.size(); i++) {
                 System.out.println((i) + " : " + invoices.get(i));
@@ -167,7 +164,7 @@ public class simpleApp {
             }
         }
 
-        int change = 0;
+        int change;
         while (true) {
             System.out.println("Please select the updated status by entering the corresponding number.");
             System.out.println("1: under review");
@@ -215,32 +212,33 @@ public class simpleApp {
     }
 
     public static void runOptionTwo(Scanner scanner, Statement statement) throws SQLException {
-        String querySQL = "";
-        int id = -1;
+        String querySQL;
+        int id;
         ArrayList<String> menus = new ArrayList<>();
         ArrayList<Integer> menuId = new ArrayList<>();
         java.sql.ResultSet rs;
-        String holder = "";
-        while(true) {
+        String holder;
+        while (true) {
             System.out.println("Please enter your staff id.");
             holder = scanner.nextLine();
-            try{
+            try {
                 id = Integer.parseInt(holder);
-            } catch (Exception NumberFormatException){
+            } catch (Exception NumberFormatException) {
                 continue;
             }
             querySQL = "select * from menu where menuid in (select menuid from prepares where employeeid = " + id + ")";
             System.out.println(querySQL);
             rs = statement.executeQuery(querySQL);
 
-        while (rs.next()) {
-            String currentMenu = "";
-            currentMenu = currentMenu + rs.getInt(1) + ", ";
-            currentMenu = currentMenu + rs.getInt(2) + ", ";
-            currentMenu = currentMenu + rs.getString(3);
+            while (rs.next()) {
+                String currentMenu = "";
+                currentMenu = currentMenu + rs.getInt(1) + ", ";
+                currentMenu = currentMenu + rs.getInt(2) + ", ";
+                currentMenu = currentMenu + rs.getString(3);
 
-            menus.add(currentMenu);
-            menuId.add(rs.getInt(2));}
+                menus.add(currentMenu);
+                menuId.add(rs.getInt(2));
+            }
             if (menus.size() == 0) {
                 System.out.println("The id that you entered either doesn't exist or isn't in charge of preparing menus.");
             } else {
@@ -313,7 +311,7 @@ public class simpleApp {
         System.out.println("Enter the name of the ingredient you wish to order."); //could do with entering a string
         String ingredientName = scanner.next();
 
-        int quantity = -1;
+        int quantity;
         while (true) {
             System.out.println("Enter the quantity.");
             holder = scanner.nextLine();
@@ -350,7 +348,7 @@ public class simpleApp {
             companies.add(rs.getString(1));
         }
 
-        int company = -1;
+        int company;
         while (true) {
             System.out.println("Please select a company to order from.");
             for (int i = 0; i < companies.size(); i++) {
@@ -374,7 +372,7 @@ public class simpleApp {
         today = today.substring(0, 10);
         System.out.println("The order date will be set to " + today);
 
-        String dDate = today;
+        String dDate;
         while (true) {
             try {
                 System.out.println("Please enter your desired delivery year 2020/2021/2022.");
@@ -408,9 +406,9 @@ public class simpleApp {
         while (rs.next()) {
             addresses.add(rs.getString(1));
         }
-        int response = -1;
-        String holder = "";
-        while(true) {
+        int response;
+        String holder;
+        while (true) {
             for (int i = 0; i < addresses.size(); i++) {
                 System.out.println(i + " : " + addresses.get(i));
             }
@@ -425,7 +423,7 @@ public class simpleApp {
                 } else {
                     System.out.println("Please enter a valid number.");
                 }
-            } catch (Exception NumberFormatException){
+            } catch (Exception NumberFormatException) {
                 System.out.println("Please enter a valid number.");
             }
         }
@@ -448,10 +446,10 @@ public class simpleApp {
         }
 
         if (reservations.size() == 0) System.out.println("This customer has no current reservations");
-int resId = -1;
-        while(true) {
-        for (int i = 0; i < reservations.size(); i++) {
-            System.out.println((i ) + " : " + reservations.get(i));
+        int resId;
+        while (true) {
+            for (int i = 0; i < reservations.size(); i++) {
+                System.out.println((i) + " : " + reservations.get(i));
             }
 
             System.out.println("Please select the reservation you wish to alter");
@@ -464,7 +462,7 @@ int resId = -1;
                 } else {
                     System.out.println("Please enter a valid number.");
                 }
-            } catch (Exception NumberFormatException){
+            } catch (Exception NumberFormatException) {
                 System.out.println("Please enter a valid number.");
             }
         }
@@ -490,16 +488,16 @@ int resId = -1;
         if (events.size() == 0) System.out.println("this reservation has no known events");
 
         boolean cancelresponse;
-        while(true){
+        while (true) {
             System.out.println("Would you like to cancel this event. [y/n]");
             for (int i = 0; i < events.size(); i++) {
                 System.out.println((i + 1) + " : " + events.get(i));
             }
             holder = scanner.nextLine();
-            if(holder.equals("y")) {
+            if (holder.equals("y")) {
                 cancelresponse = true;
                 break;
-            } else if(holder.equals("n")) {
+            } else if (holder.equals("n")) {
                 cancelresponse = false;
                 break;
             } else {
@@ -529,7 +527,7 @@ int resId = -1;
     }
 
     public static void runOptionFour(Scanner scanner, Statement statement) throws SQLException {
-        String insertString;
+
         java.sql.ResultSet rs = statement.executeQuery("select reservationid from has");
         ArrayList<String> reservations = new ArrayList<>();
         while (rs.next()) {
@@ -541,7 +539,20 @@ int resId = -1;
 
         System.out.println("Please select the corresponding number of the reservation " +
                 "of which menu you would like to modify.");
-        int response = scanner.nextInt();
+        int response;
+        while (true) {
+            String input = scanner.nextLine();
+            try {
+                response = Integer.parseInt(input);
+                if (response < 0 || response >= reservations.size()) {
+                    System.out.println("Please enter a valid number.");
+                } else {
+                    break;
+                }
+            } catch (Exception NumberFormatException) {
+                System.out.println("Please enter a valid number.");
+            }
+        }
         String reservation = reservations.get(response);
 
         rs = statement.executeQuery("select menuid from has where reservationid = '" + reservation + "'");
@@ -559,7 +570,20 @@ int resId = -1;
         System.out.println("2: remove an item");
         System.out.println("3: replace an item");
         System.out.println("4: view menu");
-        int action = scanner.nextInt();
+        int action;
+        while (true) {
+            String input = scanner.nextLine();
+            try {
+                action = Integer.parseInt(input);
+                if (action < 0 || action > 4) {
+                    System.out.println("Please enter a valid number.");
+                } else {
+                    break;
+                }
+            } catch (Exception NumberFormatException) {
+                System.out.println("Please enter a valid number.");
+            }
+        }
 
         System.out.println("The dishes in this menu are:");
         for (int i = 0; i < dishes.size(); i++) {
@@ -586,7 +610,16 @@ int resId = -1;
             case 2: { //remove menu item
                 while (true) {
                     System.out.println("Which item number would you like to remove?");
-                    int item = scanner.nextInt();
+                    int item;
+                    while (true) {
+                        String input = scanner.nextLine();
+                        try {
+                            item = Integer.parseInt(input);
+                            break;
+                        } catch (Exception NumberFormatException) {
+                            System.out.println("Please enter a valid number.");
+                        }
+                    }
                     String dish = dishes.get(item);
                     rs = statement.executeQuery("select '" + dish + "' from contains where menuid = " + menuid);
                     if (!rs.next()) {
@@ -604,7 +637,16 @@ int resId = -1;
                 String dishAdd;
                 while (true) {
                     System.out.println("Which item number would you like to replace?");
-                    int item = scanner.nextInt();
+                    int item;
+                    while (true) {
+                        String input = scanner.nextLine();
+                        try {
+                            item = Integer.parseInt(input);
+                            break;
+                        } catch (Exception NumberFormatException) {
+                            System.out.println("Please enter a valid number.");
+                        }
+                    }
                     dishRemove = dishes.get(item);
                     rs = statement.executeQuery("select '" + dishRemove + "' from contains where menuid = " + menuid);
                     if (!rs.next()) {
@@ -634,8 +676,8 @@ int resId = -1;
     public static void runOptionFive() {
     }
 
-    public static void printArrayList(ArrayList a){
-        for(int i = 0; i < a.size(); i++){
+    public static void printArrayList(ArrayList a) {
+        for (int i = 0; i < a.size(); i++) {
             System.out.println((i) + " : " + a.get(i));
         }
     }
