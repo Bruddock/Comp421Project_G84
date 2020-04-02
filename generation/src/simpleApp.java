@@ -295,6 +295,174 @@ public class simpleApp {
         System.out.println("Returning to main menu.");
     }
 
+    public static ArrayList<Integer> getStaffId()throws SQLException {
+        try {
+            DriverManager.registerDriver(new org.postgresql.Driver());
+        } catch (Exception cnfe) {
+            System.out.println("Class not found");
+        }
+
+        // This is the url you must use for Postgresql.
+        //Note: This url may not valid now !
+        String url = "jdbc:postgresql://comp421.cs.mcgill.ca:5432/cs421";
+        Connection con = DriverManager.getConnection(url, "cs421g84", "reduce2084");
+        Statement statement = con.createStatement();
+        String querySQL = "select employeeId from staff order by employeeId ASC";
+        java.sql.ResultSet rs = statement.executeQuery(querySQL);
+
+        ArrayList<Integer> staffid = new ArrayList<>();
+
+        while (rs.next()) {
+            staffid.add(rs.getInt(1));
+        }
+        return staffid;
+    }
+
+    public static ArrayList<String> getMenu(int id)throws SQLException {
+        try {
+            DriverManager.registerDriver(new org.postgresql.Driver());
+        } catch (Exception cnfe) {
+            System.out.println("Class not found");
+        }
+
+        // This is the url you must use for Postgresql.
+        //Note: This url may not valid now !
+        String url = "jdbc:postgresql://comp421.cs.mcgill.ca:5432/cs421";
+        Connection con = DriverManager.getConnection(url, "cs421g84", "reduce2084");
+        Statement statement = con.createStatement();
+        String querySQL = "select * from menu where menuid in (select menuid from prepares where employeeid = " + id + ")";
+        java.sql.ResultSet rs = statement.executeQuery(querySQL);
+
+        ArrayList<String> menus = new ArrayList<>();
+
+        while (rs.next()) {
+            String currentMenu = "";
+            currentMenu = currentMenu + rs.getInt(1) + ", ";
+            currentMenu = currentMenu + rs.getInt(2) + ", ";
+            currentMenu = currentMenu + rs.getString(3);
+            menus.add(currentMenu);
+        }
+        return menus;
+    }
+
+    public static ArrayList<Integer> getMenuId(int id)throws SQLException {
+        try {
+            DriverManager.registerDriver(new org.postgresql.Driver());
+        } catch (Exception cnfe) {
+            System.out.println("Class not found");
+        }
+
+        // This is the url you must use for Postgresql.
+        //Note: This url may not valid now !
+        String url = "jdbc:postgresql://comp421.cs.mcgill.ca:5432/cs421";
+        Connection con = DriverManager.getConnection(url, "cs421g84", "reduce2084");
+        Statement statement = con.createStatement();
+        String querySQL = "select menuid from menu where menuid in (select menuid from prepares where employeeid = " + id + ")";
+        java.sql.ResultSet rs = statement.executeQuery(querySQL);
+
+        ArrayList<Integer> invoiceid = new ArrayList<>();
+
+        while (rs.next()) {
+            invoiceid.add(rs.getInt(1));
+        }
+        return invoiceid;
+    }
+
+    public static ArrayList<String> getDish(int id)throws SQLException {
+        try {
+            DriverManager.registerDriver(new org.postgresql.Driver());
+        } catch (Exception cnfe) {
+            System.out.println("Class not found");
+        }
+
+        // This is the url you must use for Postgresql.
+        //Note: This url may not valid now !
+        String url = "jdbc:postgresql://comp421.cs.mcgill.ca:5432/cs421";
+        Connection con = DriverManager.getConnection(url, "cs421g84", "reduce2084");
+        Statement statement = con.createStatement();
+        String querySQL = "select * from dish where name in (select name from contains where menuid = " + id + ")";
+        java.sql.ResultSet rs = statement.executeQuery(querySQL);
+
+        ArrayList<String> dishes = new ArrayList<>();
+
+        while (rs.next()) {
+            String currentDish = "";
+            currentDish = currentDish + rs.getString(1) + ", ";
+            currentDish = currentDish + rs.getTime(2) + ", ";
+            currentDish = currentDish + rs.getString(3) + " , ";
+            currentDish = currentDish + rs.getString(4) + " , ";
+            currentDish = currentDish + rs.getBoolean(5);
+            dishes.add(currentDish);
+        }
+        return dishes;
+    }
+
+    public static ArrayList<String> getDishName(int id)throws SQLException {
+        try {
+            DriverManager.registerDriver(new org.postgresql.Driver());
+        } catch (Exception cnfe) {
+            System.out.println("Class not found");
+        }
+
+        // This is the url you must use for Postgresql.
+        //Note: This url may not valid now !
+        String url = "jdbc:postgresql://comp421.cs.mcgill.ca:5432/cs421";
+        Connection con = DriverManager.getConnection(url, "cs421g84", "reduce2084");
+        Statement statement = con.createStatement();
+        String querySQL = "select * from dish where name in (select name from contains where menuid = " + id + ")";
+        java.sql.ResultSet rs = statement.executeQuery(querySQL);
+
+        ArrayList<String> dishname = new ArrayList<>();
+
+        while (rs.next()) {
+            dishname.add(rs.getString(1));
+        }
+        return dishname;
+    }
+
+    public static ArrayList<String> getCompany(boolean b)throws SQLException {
+        try {
+            DriverManager.registerDriver(new org.postgresql.Driver());
+        } catch (Exception cnfe) {
+            System.out.println("Class not found");
+        }
+
+        // This is the url you must use for Postgresql.
+        //Note: This url may not valid now !
+        String url = "jdbc:postgresql://comp421.cs.mcgill.ca:5432/cs421";
+        Connection con = DriverManager.getConnection(url, "cs421g84", "reduce2084");
+        Statement statement = con.createStatement();
+        String querySQL = "select companyName from supplier where delivers = '" + b + "'";
+        java.sql.ResultSet rs = statement.executeQuery(querySQL);
+        ArrayList<String> addresses = new ArrayList<>();
+        while (rs.next()) {
+            addresses.add(rs.getString(1));
+        }
+        return addresses;
+    }
+
+    public static void orderIngredients(String company, String targetDish, String dDate, int quantity, String ingredientName) throws SQLException {
+        try {
+            DriverManager.registerDriver(new org.postgresql.Driver());
+        } catch (Exception cnfe) {
+            System.out.println("Class not found");
+        }
+
+        // This is the url you must use for Postgresql.
+        //Note: This url may not valid now !
+        String url = "jdbc:postgresql://comp421.cs.mcgill.ca:5432/cs421";
+        Connection con = DriverManager.getConnection(url, "cs421g84", "reduce2084");
+        Statement statement = con.createStatement();
+
+        String today = "" + java.time.LocalDateTime.now();
+        today = today.substring(0, 10);
+
+//        String insertSQL = "insert into ingredients values ('" + company + "' , '" + targetDish + "' , '" + today + "' , '" + dDate + "' , " + quantity + " , '" + ingredientName + "')";
+        String insertSQL = "insert into ingredients values ('" + company + "' , '" + targetDish + "' , '" + today + "' , '" + today + "' , " + quantity + " , '" + ingredientName + "')";
+        System.out.println(insertSQL);
+//        statement.executeUpdate(insertSQL);
+    }
+
     public static void runOptionTwo(Scanner scanner, Statement statement) throws SQLException {
         String querySQL;
         int id;

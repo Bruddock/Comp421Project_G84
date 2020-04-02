@@ -1,0 +1,257 @@
+import javax.swing.*;
+import javax.swing.border.Border;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.sql.SQLException;
+import java.util.ArrayList;
+
+public class Option2 extends JPanel
+            implements ActionListener {
+
+        static JLabel information;
+        protected JButton backButton;
+        protected JButton selectButton;
+        protected JPanel ingredientPanel;
+        protected static JTextField ingredientName;
+        protected static JTextField quantity;
+        protected JPanel buttonSelector;
+        protected static JList myList;
+        protected static JScrollPane listScroller;
+        protected ButtonGroup group;
+
+
+        protected static ArrayList<String> menuList;
+        protected static ArrayList<Integer> menuId;
+        protected static ArrayList<String> dishList;
+        protected static ArrayList<String> dishId;
+        protected static ArrayList<String> companyList;
+        protected static int staffIdTarget;
+        protected static int menuIdTarget;
+        protected static String dishIdTarget;
+        protected static String companyIdTarget;
+        protected static boolean deliver = false;
+
+
+        public Option2() throws SQLException {
+
+            Border raisedbevel = BorderFactory.createRaisedBevelBorder();
+
+            information = new JLabel("Option 2.\n Please select your staff id.", JLabel.CENTER);
+            information.setOpaque(true);
+            information.setOpaque(true);
+            information.setBackground(new Color(248, 213, 131));
+            information.setPreferredSize(new Dimension(400, 180));
+
+            showStaffIdList();
+
+            backButton= new JButton("Back");
+            backButton.setActionCommand("back");
+            backButton.setBorder(raisedbevel);
+            backButton.addActionListener(this);
+
+            selectButton = new JButton("Select Employee");
+            selectButton.setActionCommand("Select Employee");
+            selectButton.setBorder(raisedbevel);
+            selectButton.addActionListener(this);
+
+            setLayout(new BorderLayout());
+
+            buttonSelector = new JPanel();
+            buttonSelector.add(selectButton);
+            buttonSelector.add(backButton);
+            add(information, BorderLayout.NORTH);
+            add(listScroller, BorderLayout.CENTER);
+            add(buttonSelector, BorderLayout.SOUTH);
+            setBorder(BorderFactory.createEmptyBorder(5,5,5,5));
+        }
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            switch(e.getActionCommand()){
+                case "Deliver":
+                    deliver = true;
+                    break;
+                case "Don't Deliver":
+                    deliver = false;
+                    break;
+                case "Make Order":
+                    System.out.println(myList.getSelectedValue());
+                    this.setVisible(false);
+                    listScroller.setVisible(false);
+                    companyIdTarget = (String) myList.getSelectedValue();
+                    try {
+                        orderIngredients();
+                    } catch (SQLException ex) {
+                        ex.printStackTrace();
+                    }
+                    simpleGUI.showGUI();
+                    break;
+                case "Save Options":
+                    System.out.println(ingredientName.getText());
+                    System.out.println(quantity.getText());
+                    System.out.println(deliver);
+                    ingredientPanel.setVisible(false);
+                    try {
+                        showCompanies();
+                    } catch (SQLException ex) {
+                        ex.printStackTrace();
+                    }
+                    selectButton.setText("Make Order");
+                    selectButton.setActionCommand("Make Order");
+                    this.add(listScroller,BorderLayout.CENTER);
+                    listScroller.setVisible(true);
+                    this.setVisible(true);
+                    break;
+                case "Select Dish":
+                    System.out.println(myList.getSelectedValue());
+                    this.setVisible(false);
+                    listScroller.setVisible(false);
+                    dishIdTarget = dishId.get(dishList.indexOf(myList.getSelectedValue()));
+                    try {
+                        showIngredientsOptions();
+                    } catch (SQLException ex) {
+                        ex.printStackTrace();
+                    }
+                    selectButton.setText("Save Options");
+                    selectButton.setActionCommand("Save Options");
+                    this.add(ingredientPanel, BorderLayout.CENTER);
+                    this.setVisible(true);
+                    break;
+                case "Select Menu":
+                    System.out.println(myList.getSelectedValue());
+                    this.setVisible(false);
+                    listScroller.setVisible(false);
+                    menuIdTarget = menuId.get(menuList.indexOf(myList.getSelectedValue()));
+                    try {
+                        showDish();
+                    } catch (SQLException ex) {
+                        ex.printStackTrace();
+                    }
+                    selectButton.setText("Select Dish");
+                    selectButton.setActionCommand("Select Dish");
+                    this.add(listScroller,BorderLayout.CENTER);
+                    listScroller.setVisible(true);
+                    this.setVisible(true);
+                    break;
+                case "Select Employee":
+                    System.out.println(myList.getSelectedValue());
+                    this.setVisible(false);
+                    listScroller.setVisible(false);
+                    staffIdTarget = (int) myList.getSelectedValue();
+                    try {
+                        showMenu();
+                    } catch (SQLException ex) {
+                        ex.printStackTrace();
+                    }
+                    selectButton.setText("Select Menu");
+                    selectButton.setActionCommand("Select Menu");
+                    this.add(listScroller,BorderLayout.CENTER);
+                    listScroller.setVisible(true);
+                    this.setVisible(true);
+                    break;
+                case "back":
+                    simpleGUI.showGUI();
+                    break;
+            }
+        }
+
+        public void showStaffIdList() throws SQLException {
+            ArrayList<Integer> idList = simpleApp.getStaffId();
+            DefaultListModel listModel = new DefaultListModel();
+            for(Integer i: idList){
+                listModel.addElement(i);
+            }
+            myList = new JList(listModel);
+            myList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+            myList.setLayoutOrientation(JList.VERTICAL);
+            myList.setVisibleRowCount(-1);
+            listScroller = new JScrollPane(myList);
+            listScroller.setPreferredSize(new Dimension(250, 80));
+
+        }
+
+        public void showMenu() throws SQLException {
+            menuList = simpleApp.getMenu(staffIdTarget);
+            menuId = simpleApp.getMenuId(staffIdTarget);
+            DefaultListModel listModel = new DefaultListModel();
+            for(String s: menuList){
+                listModel.addElement(s);
+            }
+            myList = new JList(listModel);
+            myList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+            myList.setLayoutOrientation(JList.VERTICAL);
+            myList.setVisibleRowCount(-1);
+            listScroller = new JScrollPane(myList);
+            listScroller.setPreferredSize(new Dimension(250, 80));
+
+        }
+
+    public void showDish() throws SQLException {
+        dishList = simpleApp.getDish(menuIdTarget);
+        dishId = simpleApp.getDishName(menuIdTarget);
+        DefaultListModel listModel = new DefaultListModel();
+        for(String s: dishList){
+            listModel.addElement(s);
+        }
+        myList = new JList(listModel);
+        myList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        myList.setLayoutOrientation(JList.VERTICAL);
+        myList.setVisibleRowCount(-1);
+        listScroller = new JScrollPane(myList);
+        listScroller.setPreferredSize(new Dimension(250, 80));
+
+    }
+
+    public void showIngredientsOptions() throws SQLException {
+        ingredientName = new JTextField(10);
+        quantity = new JTextField(10);
+        ingredientPanel = new JPanel(new GridLayout(0, 1));
+        JPanel ingredientNamePanel = new JPanel(new GridLayout(1, 1));
+        JPanel quantitySelectPanel = new JPanel(new GridLayout(1,0));
+        JPanel radioPanel = new JPanel(new GridLayout(1, 0));
+        JRadioButton deliverButton = new JRadioButton("Deliver");
+        deliverButton.setActionCommand("Deliver");
+
+        JRadioButton ddeliverButton = new JRadioButton("Don't Deliver");
+        ddeliverButton.setActionCommand("Don't Deliver");
+        ddeliverButton.setSelected(true);
+
+        group = new ButtonGroup();
+        group.add(deliverButton);
+        group.add(ddeliverButton);
+
+        deliverButton.addActionListener(this);
+        ddeliverButton.addActionListener(this);
+
+        ingredientNamePanel.add(new JLabel("Enter the name of the ingredient"));
+        ingredientNamePanel.add(ingredientName);
+        ingredientPanel.add(ingredientNamePanel);
+
+        quantitySelectPanel.add(new JLabel("Enter the quantity you want to order."));
+        quantitySelectPanel.add(quantity);
+        ingredientPanel.add(quantitySelectPanel);
+
+        radioPanel.add(deliverButton);
+        radioPanel.add(ddeliverButton);
+        ingredientPanel.add(radioPanel);
+    }
+
+    public static void showCompanies() throws SQLException {
+        companyList = simpleApp.getCompany(deliver);
+        DefaultListModel listModel = new DefaultListModel();
+        for(String s: companyList){
+            listModel.addElement(s);
+        }
+        myList = new JList(listModel);
+        myList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        myList.setLayoutOrientation(JList.VERTICAL);
+        myList.setVisibleRowCount(-1);
+        listScroller = new JScrollPane(myList);
+        listScroller.setPreferredSize(new Dimension(250, 80));
+    }
+
+    public static void orderIngredients() throws SQLException {
+            simpleApp.orderIngredients(companyIdTarget, dishIdTarget, "hello", Integer.parseInt(quantity.getText()), ingredientName.getText());
+    }
+}
