@@ -10,24 +10,6 @@ import java.util.Scanner;
 public class simpleApp {
 
     public static void main(String[] args) throws SQLException {
-        // Unique table names.  Either the user supplies a unique identifier as a command line argument, or the program makes one up.
-//        String tableName = "";
-//        String tableName1 = "";
-//        String tableName2 = "";
-//        int sqlCode = 0;      // Variable to hold SQLCODE
-//        String sqlState = "00000";  // Variable to hold SQLSTATE
-//
-//        if (args.length > 0) {
-//            tableName += args[0];
-//            if (args.length > 1) {
-//                tableName1 += args[1];
-//            }
-//            if (args.length > 2) {
-//                tableName2 += args[2];
-//            }
-//        }//        else {
-//            tableName += "example3.tbl";
-//        }
 
         // Register the driver.  You must register the driver before you can use it.
         try {
@@ -92,6 +74,107 @@ public class simpleApp {
 
     }
 
+    public static ArrayList<String> getAddresses()throws SQLException {
+        try {
+            DriverManager.registerDriver(new org.postgresql.Driver());
+        } catch (Exception cnfe) {
+            System.out.println("Class not found");
+        }
+
+        // This is the url you must use for Postgresql.
+        //Note: This url may not valid now !
+        String url = "jdbc:postgresql://comp421.cs.mcgill.ca:5432/cs421";
+        Connection con = DriverManager.getConnection(url, "cs421g84", "reduce2084");
+        Statement statement = con.createStatement();
+        String querySQL = "select emailaddress from customer where emailaddress LIKE 'C__@%' OR emailaddress LIKE 'C_@%'";
+        java.sql.ResultSet rs = statement.executeQuery(querySQL);
+        ArrayList<String> addresses = new ArrayList<>();
+        while (rs.next()) {
+            addresses.add(rs.getString(1));
+        }
+        return addresses;
+    }
+
+    public static ArrayList<String> getInvoices(String Address)throws SQLException {
+        try {
+            DriverManager.registerDriver(new org.postgresql.Driver());
+        } catch (Exception cnfe) {
+            System.out.println("Class not found");
+        }
+
+        // This is the url you must use for Postgresql.
+        //Note: This url may not valid now !
+        String url = "jdbc:postgresql://comp421.cs.mcgill.ca:5432/cs421";
+        Connection con = DriverManager.getConnection(url, "cs421g84", "reduce2084");
+        Statement statement = con.createStatement();
+        String querySQL = "select * from customerinvoices where emailaddress = '" + Address + "'";
+        java.sql.ResultSet rs = statement.executeQuery(querySQL);
+
+        ArrayList<String> invoices = new ArrayList<>();
+        ArrayList<Integer> invoiceid = new ArrayList<>();
+
+        while (rs.next()) {
+            String currentIndex = "";
+            if (!rs.getString(2).equals("null")) {
+                currentIndex = currentIndex + rs.getString(1) + ", ";
+                currentIndex = currentIndex + rs.getDate(2) + ", ";
+                currentIndex = currentIndex + rs.getInt(3) + ", ";
+                currentIndex = currentIndex + rs.getInt(4) + ", ";
+                currentIndex = currentIndex + rs.getString(5) + ", ";
+                currentIndex = currentIndex + rs.getInt(6);
+            }
+            invoices.add(currentIndex);
+            invoiceid.add(rs.getInt(4));
+        }
+        return invoices;
+    }
+
+    public static ArrayList<Integer> getInvoiceId(String Address)throws SQLException {
+        try {
+            DriverManager.registerDriver(new org.postgresql.Driver());
+        } catch (Exception cnfe) {
+            System.out.println("Class not found");
+        }
+
+        // This is the url you must use for Postgresql.
+        //Note: This url may not valid now !
+        String url = "jdbc:postgresql://comp421.cs.mcgill.ca:5432/cs421";
+        Connection con = DriverManager.getConnection(url, "cs421g84", "reduce2084");
+        Statement statement = con.createStatement();
+        String querySQL = "select * from customerinvoices where emailaddress = '" + Address + "'";
+        java.sql.ResultSet rs = statement.executeQuery(querySQL);
+
+        ArrayList<Integer> invoiceid = new ArrayList<>();
+
+        while (rs.next()) {
+            invoiceid.add(rs.getInt(4));
+        }
+        return invoiceid;
+    }
+
+    public static void updateInvoice(int invoiceId, String status) throws SQLException {
+        try {
+            DriverManager.registerDriver(new org.postgresql.Driver());
+        } catch (Exception cnfe) {
+            System.out.println("Class not found");
+        }
+
+        // This is the url you must use for Postgresql.
+        //Note: This url may not valid now !
+        String url = "jdbc:postgresql://comp421.cs.mcgill.ca:5432/cs421";
+        Connection con = DriverManager.getConnection(url, "cs421g84", "reduce2084");
+        Statement statement = con.createStatement();
+        java.sql.ResultSet rs = statement.executeQuery("select * from invoice where invoiceid = " + invoiceId);
+        System.out.println("select * from invoice where invoiceid = " + invoiceId);
+        rs.next();
+        System.out.println("before: " + rs.getInt(4) + " , " + rs.getString(5));
+        String insertString = "update invoice set status = '" + status + "' where invoiceid = " + invoiceId;
+//        statement.executeUpdate(insertString);
+        System.out.println(insertString);
+        rs = statement.executeQuery("select * from invoice where invoiceid = " + invoiceId);
+        rs.next();
+        System.out.println("after: " + rs.getInt(4) + " , " + rs.getString(5));
+    }
 
     public static void runOptionOne(Scanner scanner, Statement statement) throws SQLException {
         String insertString;
