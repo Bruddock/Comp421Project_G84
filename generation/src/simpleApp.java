@@ -457,8 +457,8 @@ public class simpleApp {
         String today = "" + java.time.LocalDateTime.now();
         today = today.substring(0, 10);
 
-//        String insertSQL = "insert into ingredients values ('" + company + "' , '" + targetDish + "' , '" + today + "' , '" + dDate + "' , " + quantity + " , '" + ingredientName + "')";
-        String insertSQL = "insert into ingredients values ('" + company + "' , '" + targetDish + "' , '" + today + "' , '" + today + "' , " + quantity + " , '" + ingredientName + "')";
+        String insertSQL = "insert into ingredients values ('" + company + "' , '" + targetDish + "' , '" + today + "' , '" + dDate + "' , " + quantity + " , '" + ingredientName + "')";
+//        String insertSQL = "insert into ingredients values ('" + company + "' , '" + targetDish + "' , '" + today + "' , '" + today + "' , " + quantity + " , '" + ingredientName + "')";
         System.out.println(insertSQL);
 //        statement.executeUpdate(insertSQL);
     }
@@ -1169,7 +1169,6 @@ public class simpleApp {
         System.out.println(querySQL);
         statement.executeUpdate(querySQL);
     }
-
 
     public static void printArrayList(ArrayList a) {
         for (int i = 0; i < a.size(); i++) {

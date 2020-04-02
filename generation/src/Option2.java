@@ -20,6 +20,13 @@ public class Option2 extends JPanel
         protected static JScrollPane listScroller;
         protected ButtonGroup group;
 
+        protected JPanel datePanel;
+        protected JPanel dayPanel;
+        protected JPanel monthPanel;
+        protected JPanel yearPanel;
+        protected ButtonGroup dayGroup;
+        protected ButtonGroup monthGroup;
+        protected ButtonGroup yearGroup;
 
         protected static ArrayList<String> menuList;
         protected static ArrayList<Integer> menuId;
@@ -75,17 +82,31 @@ public class Option2 extends JPanel
                 case "Don't Deliver":
                     deliver = false;
                     break;
-                case "Make Order":
-                    System.out.println(myList.getSelectedValue());
+                case "Confirm Dates":
                     this.setVisible(false);
-                    listScroller.setVisible(false);
-                    companyIdTarget = (String) myList.getSelectedValue();
+                   datePanel.setVisible(false);
                     try {
                         orderIngredients();
                     } catch (SQLException ex) {
                         ex.printStackTrace();
                     }
                     simpleGUI.showGUI();
+                    break;
+                case "Make Order":
+                    System.out.println(myList.getSelectedValue());
+                    this.setVisible(false);
+                    listScroller.setVisible(false);
+                    companyIdTarget = (String) myList.getSelectedValue();
+                    try {
+                        showDateOptions();
+                    } catch (SQLException ex) {
+                        ex.printStackTrace();
+                    }
+                    selectButton.setText("Confirm Dates");
+                    selectButton.setActionCommand("Confirm Dates");
+                    this.add(datePanel,BorderLayout.CENTER);
+                    datePanel.setVisible(true);
+                    this.setVisible(true);
                     break;
                 case "Save Options":
                     System.out.println(ingredientName.getText());
@@ -237,7 +258,7 @@ public class Option2 extends JPanel
         ingredientPanel.add(radioPanel);
     }
 
-    public static void showCompanies() throws SQLException {
+    public void showCompanies() throws SQLException {
         companyList = simpleApp.getCompany(deliver);
         DefaultListModel listModel = new DefaultListModel();
         for(String s: companyList){
@@ -251,7 +272,56 @@ public class Option2 extends JPanel
         listScroller.setPreferredSize(new Dimension(250, 80));
     }
 
-    public static void orderIngredients() throws SQLException {
-            simpleApp.orderIngredients(companyIdTarget, dishIdTarget, "hello", Integer.parseInt(quantity.getText()), ingredientName.getText());
+    public void showDateOptions() throws SQLException {
+        datePanel = new JPanel(new GridLayout(0, 1));
+        dayPanel = new JPanel(new GridLayout(4, 0));
+        monthPanel = new JPanel(new GridLayout(4, 0));
+        yearPanel = new JPanel(new GridLayout(4, 0));
+
+        dayGroup = new ButtonGroup();
+        String name;
+        for(int i = 1; i<=31; i++){
+            if(i<10) name = "0" + i;
+            else name = "" + i;
+            JRadioButton temp = new JRadioButton(name);
+            temp.addActionListener(this);
+            temp.setActionCommand(name);
+            dayGroup.add(temp);
+            dayPanel.add(temp);
+        }
+        monthGroup = new ButtonGroup();
+        for(int i = 1; i<=12; i++){
+            if(i<10) name = "0" + i;
+            else name = "" + i;
+            JRadioButton temp = new JRadioButton(name);
+            temp.addActionListener(this);
+            temp.setActionCommand(name);
+            monthGroup.add(temp);
+            monthPanel.add(temp);
+        }
+        yearGroup = new ButtonGroup();
+        for(int i = 2020; i<=2023; i++){
+            JRadioButton temp = new JRadioButton("" + i);
+            temp.addActionListener(this);
+            temp.setActionCommand("" + i);
+            yearGroup.add(temp);
+            yearPanel.add(temp);
+        }
+
+        datePanel.add(new JLabel("Select a day"));
+        datePanel.add(dayPanel);
+        datePanel.add(new JLabel("Select a month"));
+        datePanel.add(monthPanel);
+        datePanel.add(new JLabel("Select a year"));
+        datePanel.add(yearPanel);
+
+    }
+
+    public void orderIngredients() throws SQLException {
+            String date = "";
+            date += (yearGroup.getSelection()).getActionCommand() + "-";
+            date += (monthGroup.getSelection()).getActionCommand() + "-";
+            date += (dayGroup.getSelection()).getActionCommand();
+            simpleApp.orderIngredients(companyIdTarget, dishIdTarget, date, Integer.parseInt(quantity.getText()), ingredientName.getText());
     }
 }
