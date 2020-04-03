@@ -1039,6 +1039,97 @@ public class simpleApp {
         }
     }
 
+    public static void createInvoice(boolean decision, String option, int amount, int acctid) throws SQLException {
+
+        // Register the driver.  You must register the driver before you can use it.
+        try {
+            DriverManager.registerDriver(new org.postgresql.Driver());
+        } catch (Exception cnfe) {
+            System.out.println("Class not found");
+        }
+
+        // This is the url you must use for Postgresql.
+        //Note: This url may not valid now !
+        String url = "jdbc:postgresql://comp421.cs.mcgill.ca:5432/cs421";
+        Connection con = DriverManager.getConnection(url, "cs421g84", "reduce2084");
+        Statement statement = con.createStatement();
+
+        String today = "" + java.time.LocalDateTime.now();
+        today = today.substring(0, 10);
+
+        Random x = new Random();
+        int invoiceid = x.nextInt(10000) + 30000;
+
+        String querySQL;
+        if(decision) querySQL = "insert into invoice Values( '" + today + "' , " + amount + " , 'ingredients purchase' , " + invoiceid + " , 'pending' , null , '" + option + "' , " + acctid + " )";
+        else querySQL = "insert into invoice Values( '" + today + "' , " + amount + " , 'ingredients purchase' , " + invoiceid + " , 'pending' , '" + option + "' , null , " + acctid + ")";
+        System.out.println(querySQL);
+//        statement.executeUpdate(querySQL);
+    }
+
+    public static ArrayList<String> getPartners(boolean decision, boolean option, int accountId) throws SQLException {
+
+        // Register the driver.  You must register the driver before you can use it.
+        try {
+            DriverManager.registerDriver(new org.postgresql.Driver());
+        } catch (Exception cnfe) {
+            System.out.println("Class not found");
+        }
+
+        // This is the url you must use for Postgresql.
+        //Note: This url may not valid now !
+        String url = "jdbc:postgresql://comp421.cs.mcgill.ca:5432/cs421";
+        Connection con = DriverManager.getConnection(url, "cs421g84", "reduce2084");
+        Statement statement = con.createStatement();
+        String querySQL;
+        if(decision) {
+            if(option){
+            querySQL = "select distinct suppliername from invoice where descriptionofservices = 'ingredients purchase' AND status = 'rejected' AND acctid = " + accountId + " Order by suppliername";
+            } else {
+                querySQL = "select distinct suppliername from invoice where descriptionofservices = 'ingredients purchase' AND acctid = " + accountId + " Order by suppliername";
+            }
+        }
+        else {
+            if(option){
+                querySQL = "select distinct clientemail from invoice where descriptionofservices = 'reservation payment' AND status = 'rejected' AND acctid = " + accountId + " Order by clientemail";
+            } else {
+                querySQL = "select distinct clientemail from invoice where descriptionofservices = 'reservation payment' AND acctid = " + accountId + " Order by clientemail";
+            }
+        }
+        System.out.println(querySQL);
+        java.sql.ResultSet rs = statement.executeQuery(querySQL);
+        ArrayList<String> ids = new ArrayList<>();
+        while (rs.next()) {
+            ids.add(rs.getString(1));
+        }
+        return ids;
+    }
+
+    public static ArrayList<Integer> getAccountIds(boolean b) throws SQLException {
+
+        // Register the driver.  You must register the driver before you can use it.
+        try {
+            DriverManager.registerDriver(new org.postgresql.Driver());
+        } catch (Exception cnfe) {
+            System.out.println("Class not found");
+        }
+
+        // This is the url you must use for Postgresql.
+        //Note: This url may not valid now !
+        String url = "jdbc:postgresql://comp421.cs.mcgill.ca:5432/cs421";
+        Connection con = DriverManager.getConnection(url, "cs421g84", "reduce2084");
+        Statement statement = con.createStatement();
+        String querySQL;
+        if(b) querySQL = "select acctid from accountpayable";
+        else querySQL = "select acctid from accountreceivable";
+        java.sql.ResultSet rs = statement.executeQuery(querySQL);
+        ArrayList<Integer> ids = new ArrayList<>();
+        while (rs.next()) {
+            ids.add(rs.getInt(1));
+        }
+        return ids;
+    }
+
     public static void runOptionFive(Scanner scanner, Statement statement) {
         String holder;
         int response;

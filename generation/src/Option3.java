@@ -70,7 +70,6 @@ public class Option3 extends JPanel
         switch(e.getActionCommand()){
             case "Submit":
                 if(decision) {
-                    reservationIdTarget = reservationid.get(reservations.indexOf(myList.getSelectedValue()));
                     try {
                         simpleApp.updateEvent(reservationIdTarget);
                     } catch (SQLException ex) {
@@ -116,8 +115,9 @@ public class Option3 extends JPanel
                 System.out.println(myList.getSelectedValue());
                 this.setVisible(false);
                 listScroller.setVisible(false);
+                reservationIdTarget = reservationid.get(reservations.indexOf((String) myList.getSelectedValue()));
                 try {
-                    showEvents((Integer) myList.getSelectedValue());
+                    showEvents(reservationIdTarget);
                 } catch (SQLException ex) {
                     ex.printStackTrace();
                 }
@@ -205,10 +205,8 @@ public class Option3 extends JPanel
 
     private static void showAddressList() throws SQLException {
 
-        ArrayList<String> addresses = new ArrayList<>();
-        addresses = simpleApp.getAddresses();
+        ArrayList<String> addresses = simpleApp.getAddresses();
         DefaultListModel listModel = new DefaultListModel();
-//        addresses.add("test");
         for(String s: addresses){
             listModel.addElement(s);
         }
