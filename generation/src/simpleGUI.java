@@ -125,6 +125,16 @@ public class simpleGUI extends JPanel
                 frame.getContentPane().setVisible(true);
                 break;
             case "Option3": System.out.println("Option3");
+                frame.getContentPane().setVisible(false);
+                Option3 menu3 = null;
+                try {
+                    menu3 = new Option3();
+                } catch (SQLException ex) {
+                    ex.printStackTrace();
+                }
+                menu3.setOpaque(true);
+                frame.setContentPane(menu3);
+                frame.getContentPane().setVisible(true);
                 break;
             case "Option4": System.out.println("Option4");
                 break;

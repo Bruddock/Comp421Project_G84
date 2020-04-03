@@ -647,6 +647,122 @@ public class simpleApp {
         System.out.println("Returning to main menu.");
     }
 
+    public static void updateEvent(int resId) throws SQLException {
+        try {
+            DriverManager.registerDriver(new org.postgresql.Driver());
+        } catch (Exception cnfe) {
+            System.out.println("Class not found");
+        }
+
+        // This is the url you must use for Postgresql.
+        //Note: This url may not valid now !
+        String url = "jdbc:postgresql://comp421.cs.mcgill.ca:5432/cs421";
+        Connection con = DriverManager.getConnection(url, "cs421g84", "reduce2084");
+        Statement statement = con.createStatement();
+        //has (menu)
+        String insertString = "delete from has where reservationid = " + resId;
+        System.out.println(insertString);
+//        statement.executeUpdate(insertString);
+        //staffed by
+        insertString = "delete from staffby where reservationid = " + resId;
+        System.out.println(insertString);
+//        statement.executeUpdate(insertString);
+        //event
+        insertString = "delete from event where reservationid = " + resId;
+        System.out.println(insertString);
+//        statement.executeUpdate(insertString);
+        //reservation
+        insertString = "delete from reservation where reservationid = " + resId;
+        System.out.println(insertString);
+//        statement.executeUpdate(insertString);
+    }
+
+    public static ArrayList<String> getEvents(int selected) throws SQLException {
+
+        // Register the driver.  You must register the driver before you can use it.
+        try {
+            DriverManager.registerDriver(new org.postgresql.Driver());
+        } catch (Exception cnfe) {
+            System.out.println("Class not found");
+        }
+
+        // This is the url you must use for Postgresql.
+        //Note: This url may not valid now !
+        String url = "jdbc:postgresql://comp421.cs.mcgill.ca:5432/cs421";
+        Connection con = DriverManager.getConnection(url, "cs421g84", "reduce2084");
+        Statement statement = con.createStatement();
+        String querySQL = "select * from event where reservationid = " + selected;
+        java.sql.ResultSet rs = statement.executeQuery(querySQL);
+        ArrayList<String> events = new ArrayList<>();
+        while (rs.next()) {
+            String currentIndex = "";
+            currentIndex = currentIndex + rs.getBoolean(1) + ", ";
+            currentIndex = currentIndex + rs.getInt(2) + ", ";
+            currentIndex = currentIndex + rs.getString(3) + ", ";
+            currentIndex = currentIndex + rs.getBoolean(4) + ", ";
+            currentIndex = currentIndex + rs.getString(5) + ", ";
+            currentIndex = currentIndex + rs.getString(6) + ", ";
+            currentIndex = currentIndex + rs.getInt(7) + ", ";
+            currentIndex = currentIndex + rs.getString(8) + ", ";
+            currentIndex = currentIndex + rs.getInt(9);
+            events.add(currentIndex);
+        }
+        return events;
+    }
+
+    public static ArrayList<Integer> getReservationIds(String selected) throws SQLException {
+
+        // Register the driver.  You must register the driver before you can use it.
+        try {
+            DriverManager.registerDriver(new org.postgresql.Driver());
+        } catch (Exception cnfe) {
+            System.out.println("Class not found");
+        }
+
+        // This is the url you must use for Postgresql.
+        //Note: This url may not valid now !
+        String url = "jdbc:postgresql://comp421.cs.mcgill.ca:5432/cs421";
+        Connection con = DriverManager.getConnection(url, "cs421g84", "reduce2084");
+        Statement statement = con.createStatement();
+        String querySQL = "select * from reservation where clientemail = '" + selected + "'";
+        java.sql.ResultSet rs = statement.executeQuery(querySQL);
+        ArrayList<Integer> reservationids = new ArrayList<>();
+        while (rs.next()) {
+            reservationids.add(rs.getInt(3));
+        }
+        return reservationids;
+    }
+
+    public static ArrayList<String> getReservations(String selected) throws SQLException {
+
+        // Register the driver.  You must register the driver before you can use it.
+        try {
+            DriverManager.registerDriver(new org.postgresql.Driver());
+        } catch (Exception cnfe) {
+            System.out.println("Class not found");
+        }
+
+        // This is the url you must use for Postgresql.
+        //Note: This url may not valid now !
+        String url = "jdbc:postgresql://comp421.cs.mcgill.ca:5432/cs421";
+        Connection con = DriverManager.getConnection(url, "cs421g84", "reduce2084");
+        Statement statement = con.createStatement();
+        String querySQL = "select * from reservation where clientemail = '" + selected + "'";
+        java.sql.ResultSet rs = statement.executeQuery(querySQL);
+        ArrayList<String> reservations = new ArrayList<>();
+        while (rs.next()) {
+            String currentIndex = "";
+            if (!rs.getString(2).equals("null")) {
+                currentIndex = currentIndex + rs.getString(1) + ", ";
+                currentIndex = currentIndex + rs.getString(2) + ", ";
+                currentIndex = currentIndex + rs.getInt(3) + ", ";
+                currentIndex = currentIndex + rs.getString(4);
+            }
+            reservations.add(currentIndex);
+        }
+        return reservations;
+    }
+
     public static void runOptionThree(Scanner scanner, Statement statement) throws SQLException {
 
         String insertString;

@@ -9,15 +9,15 @@ import java.util.ArrayList;
 public class Option2 extends JPanel
             implements ActionListener {
 
-        static JLabel information;
+        protected JLabel information;
         protected JButton backButton;
         protected JButton selectButton;
         protected JPanel ingredientPanel;
-        protected static JTextField ingredientName;
-        protected static JTextField quantity;
+        protected JTextField ingredientName;
+        protected JTextField quantity;
         protected JPanel buttonSelector;
-        protected static JList myList;
-        protected static JScrollPane listScroller;
+        protected JList myList;
+        protected JScrollPane listScroller;
         protected ButtonGroup group;
 
         protected JPanel datePanel;
@@ -208,120 +208,120 @@ public class Option2 extends JPanel
 
         }
 
-    public void showDish() throws SQLException {
-        dishList = simpleApp.getDish(menuIdTarget);
-        dishId = simpleApp.getDishName(menuIdTarget);
-        DefaultListModel listModel = new DefaultListModel();
-        for(String s: dishList){
-            listModel.addElement(s);
-        }
-        myList = new JList(listModel);
-        myList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        myList.setLayoutOrientation(JList.VERTICAL);
-        myList.setVisibleRowCount(-1);
-        listScroller = new JScrollPane(myList);
-        listScroller.setPreferredSize(new Dimension(250, 80));
+        public void showDish() throws SQLException {
+            dishList = simpleApp.getDish(menuIdTarget);
+            dishId = simpleApp.getDishName(menuIdTarget);
+            DefaultListModel listModel = new DefaultListModel();
+            for(String s: dishList){
+                listModel.addElement(s);
+            }
+            myList = new JList(listModel);
+            myList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+            myList.setLayoutOrientation(JList.VERTICAL);
+            myList.setVisibleRowCount(-1);
+            listScroller = new JScrollPane(myList);
+            listScroller.setPreferredSize(new Dimension(250, 80));
 
-    }
-
-    public void showIngredientsOptions() throws SQLException {
-        ingredientName = new JTextField(10);
-        quantity = new JTextField(10);
-        ingredientPanel = new JPanel(new GridLayout(0, 1));
-        JPanel ingredientNamePanel = new JPanel(new GridLayout(1, 1));
-        JPanel quantitySelectPanel = new JPanel(new GridLayout(1,0));
-        JPanel radioPanel = new JPanel(new GridLayout(1, 0));
-        JRadioButton deliverButton = new JRadioButton("Deliver");
-        deliverButton.setActionCommand("Deliver");
-
-        JRadioButton ddeliverButton = new JRadioButton("Don't Deliver");
-        ddeliverButton.setActionCommand("Don't Deliver");
-        ddeliverButton.setSelected(true);
-
-        group = new ButtonGroup();
-        group.add(deliverButton);
-        group.add(ddeliverButton);
-
-        deliverButton.addActionListener(this);
-        ddeliverButton.addActionListener(this);
-
-        ingredientNamePanel.add(new JLabel("Enter the name of the ingredient"));
-        ingredientNamePanel.add(ingredientName);
-        ingredientPanel.add(ingredientNamePanel);
-
-        quantitySelectPanel.add(new JLabel("Enter the quantity you want to order."));
-        quantitySelectPanel.add(quantity);
-        ingredientPanel.add(quantitySelectPanel);
-
-        radioPanel.add(deliverButton);
-        radioPanel.add(ddeliverButton);
-        ingredientPanel.add(radioPanel);
-    }
-
-    public void showCompanies() throws SQLException {
-        companyList = simpleApp.getCompany(deliver);
-        DefaultListModel listModel = new DefaultListModel();
-        for(String s: companyList){
-            listModel.addElement(s);
-        }
-        myList = new JList(listModel);
-        myList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        myList.setLayoutOrientation(JList.VERTICAL);
-        myList.setVisibleRowCount(-1);
-        listScroller = new JScrollPane(myList);
-        listScroller.setPreferredSize(new Dimension(250, 80));
-    }
-
-    public void showDateOptions() throws SQLException {
-        datePanel = new JPanel(new GridLayout(0, 1));
-        dayPanel = new JPanel(new GridLayout(4, 0));
-        monthPanel = new JPanel(new GridLayout(4, 0));
-        yearPanel = new JPanel(new GridLayout(4, 0));
-
-        dayGroup = new ButtonGroup();
-        String name;
-        for(int i = 1; i<=31; i++){
-            if(i<10) name = "0" + i;
-            else name = "" + i;
-            JRadioButton temp = new JRadioButton(name);
-            temp.addActionListener(this);
-            temp.setActionCommand(name);
-            dayGroup.add(temp);
-            dayPanel.add(temp);
-        }
-        monthGroup = new ButtonGroup();
-        for(int i = 1; i<=12; i++){
-            if(i<10) name = "0" + i;
-            else name = "" + i;
-            JRadioButton temp = new JRadioButton(name);
-            temp.addActionListener(this);
-            temp.setActionCommand(name);
-            monthGroup.add(temp);
-            monthPanel.add(temp);
-        }
-        yearGroup = new ButtonGroup();
-        for(int i = 2020; i<=2023; i++){
-            JRadioButton temp = new JRadioButton("" + i);
-            temp.addActionListener(this);
-            temp.setActionCommand("" + i);
-            yearGroup.add(temp);
-            yearPanel.add(temp);
         }
 
-        datePanel.add(new JLabel("Select a day"));
-        datePanel.add(dayPanel);
-        datePanel.add(new JLabel("Select a month"));
-        datePanel.add(monthPanel);
-        datePanel.add(new JLabel("Select a year"));
-        datePanel.add(yearPanel);
+        public void showIngredientsOptions() throws SQLException {
+            ingredientName = new JTextField(10);
+            quantity = new JTextField(10);
+            ingredientPanel = new JPanel(new GridLayout(0, 1));
+            JPanel ingredientNamePanel = new JPanel(new GridLayout(1, 1));
+            JPanel quantitySelectPanel = new JPanel(new GridLayout(1,0));
+            JPanel radioPanel = new JPanel(new GridLayout(1, 0));
+            JRadioButton deliverButton = new JRadioButton("Deliver");
+            deliverButton.setActionCommand("Deliver");
 
-    }
+            JRadioButton ddeliverButton = new JRadioButton("Don't Deliver");
+            ddeliverButton.setActionCommand("Don't Deliver");
+            ddeliverButton.setSelected(true);
 
-    public void orderIngredients() throws SQLException {
+            group = new ButtonGroup();
+            group.add(deliverButton);
+            group.add(ddeliverButton);
+
+            deliverButton.addActionListener(this);
+            ddeliverButton.addActionListener(this);
+
+            ingredientNamePanel.add(new JLabel("Enter the name of the ingredient"));
+            ingredientNamePanel.add(ingredientName);
+            ingredientPanel.add(ingredientNamePanel);
+
+            quantitySelectPanel.add(new JLabel("Enter the quantity you want to order."));
+            quantitySelectPanel.add(quantity);
+            ingredientPanel.add(quantitySelectPanel);
+
+            radioPanel.add(deliverButton);
+            radioPanel.add(ddeliverButton);
+            ingredientPanel.add(radioPanel);
+        }
+
+        public void showCompanies() throws SQLException {
+            companyList = simpleApp.getCompany(deliver);
+            DefaultListModel listModel = new DefaultListModel();
+            for(String s: companyList){
+                listModel.addElement(s);
+            }
+            myList = new JList(listModel);
+            myList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+            myList.setLayoutOrientation(JList.VERTICAL);
+            myList.setVisibleRowCount(-1);
+            listScroller = new JScrollPane(myList);
+            listScroller.setPreferredSize(new Dimension(250, 80));
+        }
+
+        public void showDateOptions() throws SQLException {
+            datePanel = new JPanel(new GridLayout(0, 1));
+            dayPanel = new JPanel(new GridLayout(4, 0));
+            monthPanel = new JPanel(new GridLayout(4, 0));
+            yearPanel = new JPanel(new GridLayout(4, 0));
+
+            dayGroup = new ButtonGroup();
+            String name;
+            for(int i = 1; i<=31; i++){
+                if(i<10) name = "0" + i;
+                else name = "" + i;
+                JRadioButton temp = new JRadioButton(name);
+                temp.addActionListener(this);
+                temp.setActionCommand(name);
+                dayGroup.add(temp);
+                dayPanel.add(temp);
+            }
+            monthGroup = new ButtonGroup();
+            for(int i = 1; i<=12; i++){
+                if(i<10) name = "0" + i;
+                else name = "" + i;
+                JRadioButton temp = new JRadioButton(name);
+                temp.addActionListener(this);
+                temp.setActionCommand(name);
+                monthGroup.add(temp);
+                monthPanel.add(temp);
+            }
+            yearGroup = new ButtonGroup();
+            for(int i = 2020; i<=2023; i++){
+                JRadioButton temp = new JRadioButton("" + i);
+                temp.addActionListener(this);
+                temp.setActionCommand("" + i);
+                yearGroup.add(temp);
+                yearPanel.add(temp);
+            }
+
+            datePanel.add(new JLabel("Select a day"));
+            datePanel.add(dayPanel);
+            datePanel.add(new JLabel("Select a month"));
+            datePanel.add(monthPanel);
+            datePanel.add(new JLabel("Select a year"));
+            datePanel.add(yearPanel);
+
+        }
+
+        public void orderIngredients() throws SQLException {
             String date = "";
             date += (yearGroup.getSelection()).getActionCommand() + "-";
             date += (monthGroup.getSelection()).getActionCommand() + "-";
             date += (dayGroup.getSelection()).getActionCommand();
             simpleApp.orderIngredients(companyIdTarget, dishIdTarget, date, Integer.parseInt(quantity.getText()), ingredientName.getText());
-    }
+        }
 }
