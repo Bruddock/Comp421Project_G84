@@ -892,6 +892,124 @@ public class simpleApp {
         }
     }
 
+    public static void replaceDish(int menuid, String targetdish, String newDish) throws SQLException {
+        // Register the driver.  You must register the driver before you can use it.
+        try {
+            DriverManager.registerDriver(new org.postgresql.Driver());
+        } catch (Exception cnfe) {
+            System.out.println("Class not found");
+        }
+
+        // This is the url you must use for Postgresql.
+        //Note: This url may not valid now !
+        String url = "jdbc:postgresql://comp421.cs.mcgill.ca:5432/cs421";
+        Connection con = DriverManager.getConnection(url, "cs421g84", "reduce2084");
+        Statement statement = con.createStatement();
+        statement.executeUpdate("update contains set name = '" + newDish + "' where menuid = " + menuid + " and name = '" + targetdish + "'");
+    }
+
+    public static void addDish(int menuid, String newDish) throws SQLException {
+// Register the driver.  You must register the driver before you can use it.
+        try {
+            DriverManager.registerDriver(new org.postgresql.Driver());
+        } catch (Exception cnfe) {
+            System.out.println("Class not found");
+        }
+
+        // This is the url you must use for Postgresql.
+        //Note: This url may not valid now !
+        String url = "jdbc:postgresql://comp421.cs.mcgill.ca:5432/cs421";
+        Connection con = DriverManager.getConnection(url, "cs421g84", "reduce2084");
+        Statement statement = con.createStatement();
+        statement.executeUpdate("insert into contains values (" + menuid + ", '" + newDish + "')");
+        statement.executeUpdate("update menu set numcourses = numcourses + 1 where menuid = " + menuid);
+    }
+
+    public static void removeDish(int menuid, String targetdish) throws SQLException {
+// Register the driver.  You must register the driver before you can use it.
+        try {
+            DriverManager.registerDriver(new org.postgresql.Driver());
+        } catch (Exception cnfe) {
+            System.out.println("Class not found");
+        }
+
+        // This is the url you must use for Postgresql.
+        //Note: This url may not valid now !
+        String url = "jdbc:postgresql://comp421.cs.mcgill.ca:5432/cs421";
+        Connection con = DriverManager.getConnection(url, "cs421g84", "reduce2084");
+        Statement statement = con.createStatement();
+        System.out.println("delete from contains where menuid = " + menuid + " and name = '" + targetdish + "' \n " + "update menu set numcourses = numcourses - 1 where menuid = " + menuid);
+//        statement.executeUpdate("delete from contains where menuid = " + menuid + " and name = '" + targetdish + "'");
+//        statement.executeUpdate("update menu set numcourses = numcourses - 1 where menuid = " + menuid);
+    }
+
+    public static int getResMenuId(int resId) throws SQLException {
+
+        // Register the driver.  You must register the driver before you can use it.
+        try {
+            DriverManager.registerDriver(new org.postgresql.Driver());
+        } catch (Exception cnfe) {
+            System.out.println("Class not found");
+        }
+
+        // This is the url you must use for Postgresql.
+        //Note: This url may not valid now !
+        String url = "jdbc:postgresql://comp421.cs.mcgill.ca:5432/cs421";
+        Connection con = DriverManager.getConnection(url, "cs421g84", "reduce2084");
+        Statement statement = con.createStatement();
+        java.sql.ResultSet rs = statement.executeQuery("select menuid from has where reservationid = '" + resId + "'");
+        rs.next();
+        return rs.getInt(1);
+    }
+
+    public static ArrayList<String> getHasDish(int resId) throws SQLException {
+
+        // Register the driver.  You must register the driver before you can use it.
+        try {
+            DriverManager.registerDriver(new org.postgresql.Driver());
+        } catch (Exception cnfe) {
+            System.out.println("Class not found");
+        }
+
+        // This is the url you must use for Postgresql.
+        //Note: This url may not valid now !
+        String url = "jdbc:postgresql://comp421.cs.mcgill.ca:5432/cs421";
+        Connection con = DriverManager.getConnection(url, "cs421g84", "reduce2084");
+        Statement statement = con.createStatement();
+        java.sql.ResultSet rs = statement.executeQuery("select menuid from has where reservationid = '" + resId + "'");
+        rs.next();
+        String menuid = rs.getString(1);
+        rs = statement.executeQuery("select name from contains where menuid = '" + menuid + "'");
+        ArrayList<String> dishes = new ArrayList<>();
+        while (rs.next()) {
+            dishes.add(rs.getString(1));
+        }
+        return dishes;
+    }
+
+    public static ArrayList<String> getHasRes() throws SQLException {
+
+        // Register the driver.  You must register the driver before you can use it.
+        try {
+            DriverManager.registerDriver(new org.postgresql.Driver());
+        } catch (Exception cnfe) {
+            System.out.println("Class not found");
+        }
+
+        // This is the url you must use for Postgresql.
+        //Note: This url may not valid now !
+        String url = "jdbc:postgresql://comp421.cs.mcgill.ca:5432/cs421";
+        Connection con = DriverManager.getConnection(url, "cs421g84", "reduce2084");
+        Statement statement = con.createStatement();
+        String querySQL = "select reservationid from has";
+        java.sql.ResultSet rs = statement.executeQuery(querySQL);
+        ArrayList<String> reservations = new ArrayList<>();
+        while (rs.next()) {
+            reservations.add(rs.getString(1));
+        }
+        return reservations;
+    }
+
     public static void runOptionFour(Scanner scanner, Statement statement) throws SQLException {
 
         java.sql.ResultSet rs = statement.executeQuery("select reservationid from has");
@@ -1261,7 +1379,7 @@ public class simpleApp {
         int invoiceid = x.nextInt(10000) + 30000;
 
 
-        querySQL = "insert into invoice Values( '" + today + "' , " + amount + " , 'ingredients purchase' , " + invoiceid + " , 'pending' , null , '" + supplier + "')";
+        querySQL = "insert into invoice Values( '" + today + "' , " + amount + " , 'ingredients purchase' , " + invoiceid + " , 'pending' , null , '" + supplier + "', " + accountId + ")";
         System.out.println(querySQL);
         statement.executeUpdate(querySQL);
 
@@ -1372,7 +1490,7 @@ public class simpleApp {
         int invoiceid = x.nextInt(10000) + 30000;
 
 
-        querySQL = "insert into invoice Values( '" + today + "' , " + amount + " , 'ingredients purchase' , " + invoiceid + " , 'pending' , '" + clientmail + "' , null)";
+        querySQL = "insert into invoice Values( '" + today + "' , " + amount + " , 'ingredients purchase' , " + invoiceid + " , 'pending' , '" + clientmail + "' , null , " + accountId + ")";
         System.out.println(querySQL);
         statement.executeUpdate(querySQL);
     }
