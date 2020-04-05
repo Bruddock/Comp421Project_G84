@@ -192,6 +192,7 @@ public class Option2 extends JPanel
             myList = new JList(listModel);
             myList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
             myList.setLayoutOrientation(JList.VERTICAL);
+            myList.setSelectedIndex(0);
             myList.setVisibleRowCount(-1);
             listScroller = new JScrollPane(myList);
             listScroller.setPreferredSize(new Dimension(250, 80));
@@ -214,6 +215,7 @@ public class Option2 extends JPanel
                 myList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
                 myList.setLayoutOrientation(JList.VERTICAL);
                 myList.setVisibleRowCount(-1);
+                myList.setSelectedIndex(0);
                 listScroller = new JScrollPane(myList);
                 listScroller.setPreferredSize(new Dimension(250, 80));
             } else {
@@ -238,6 +240,7 @@ public class Option2 extends JPanel
                 myList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
                 myList.setLayoutOrientation(JList.VERTICAL);
                 myList.setVisibleRowCount(-1);
+                myList.setSelectedIndex(0);
                 listScroller = new JScrollPane(myList);
                 listScroller.setPreferredSize(new Dimension(250, 80));
             } else {
@@ -291,6 +294,7 @@ public class Option2 extends JPanel
             myList = new JList(listModel);
             myList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
             myList.setLayoutOrientation(JList.VERTICAL);
+            myList.setSelectedIndex(0);
             myList.setVisibleRowCount(-1);
             listScroller = new JScrollPane(myList);
             listScroller.setPreferredSize(new Dimension(250, 80));

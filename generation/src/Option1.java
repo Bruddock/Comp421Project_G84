@@ -130,6 +130,7 @@ public class Option1 extends JPanel
         myList = new JList(listModel);
         myList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         myList.setLayoutOrientation(JList.VERTICAL);
+        myList.setSelectedIndex(0);
         myList.setVisibleRowCount(-1);
         listScroller = new JScrollPane(myList);
         listScroller.setPreferredSize(new Dimension(250, 80));
@@ -145,6 +146,7 @@ public class Option1 extends JPanel
         for(String s: invoices){
             listModel.addElement(s);
         }
+        myList.setSelectedIndex(0);
         if (invoices.size() > 0) {
             myList = new JList(listModel);
             myList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
@@ -166,6 +168,7 @@ public class Option1 extends JPanel
 
         JRadioButton reviewButton = new JRadioButton("Under Review");
         reviewButton.setActionCommand("Under Review");
+        reviewButton.setSelected(true);
 
         JRadioButton acceptButton = new JRadioButton("Accepted");
         acceptButton.setActionCommand("Accepted");

@@ -159,6 +159,7 @@ public class Option3 extends JPanel
 
         JRadioButton rejectButton = new JRadioButton("No");
         rejectButton.setActionCommand("No");
+        rejectButton.setSelected(true);
 
         //Group the radio buttons.
         group = new ButtonGroup();
@@ -185,6 +186,7 @@ public class Option3 extends JPanel
             myList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
             myList.setLayoutOrientation(JList.VERTICAL);
             myList.setVisibleRowCount(-1);
+            myList.setSelectedIndex(0);
             listScroller = new JScrollPane(myList);
             listScroller.setPreferredSize(new Dimension(250, 80));
         } else {
@@ -206,6 +208,7 @@ public class Option3 extends JPanel
             myList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
             myList.setLayoutOrientation(JList.VERTICAL);
             myList.setVisibleRowCount(-1);
+            myList.setSelectedIndex(0);
             listScroller = new JScrollPane(myList);
             listScroller.setPreferredSize(new Dimension(250, 80));
 
@@ -227,6 +230,7 @@ public class Option3 extends JPanel
         myList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         myList.setLayoutOrientation(JList.VERTICAL);
         myList.setVisibleRowCount(-1);
+        myList.setSelectedIndex(0);
         listScroller = new JScrollPane(myList);
         listScroller.setPreferredSize(new Dimension(250, 80));
 

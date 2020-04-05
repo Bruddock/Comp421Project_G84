@@ -163,13 +163,18 @@ public class Option5 extends JPanel
         for(Integer s: accountsid){
             listModel.addElement(s);
         }
-
-        myList = new JList(listModel);
-        myList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        myList.setLayoutOrientation(JList.VERTICAL);
-        myList.setVisibleRowCount(-1);
-        listScroller = new JScrollPane(myList);
-        listScroller.setPreferredSize(new Dimension(250, 80));
+        if(accountsid.size() > 0) {
+            myList = new JList(listModel);
+            myList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+            myList.setLayoutOrientation(JList.VERTICAL);
+            myList.setSelectedIndex(0);
+            myList.setVisibleRowCount(-1);
+            listScroller = new JScrollPane(myList);
+            listScroller.setPreferredSize(new Dimension(250, 80));
+        } else {
+            simpleGUI.showGUI();
+            simpleGUI.showError("The staffId that you selected has no associated menus.");
+        }
     }
 
     private void showAssociatedOptions(boolean b){
@@ -188,7 +193,7 @@ public class Option5 extends JPanel
             reservationButton.setText("A customer associated with this account");
             reservationButton.setActionCommand("Option 2");
         }
-
+        reservationButton.setSelected(true);
         //Group the radio buttons.
         group = new ButtonGroup();
         group.add(ingredientsButton);
@@ -205,16 +210,22 @@ public class Option5 extends JPanel
     private void showPartners(int id) throws SQLException {
         partners = simpleApp.getPartners(decision, option, id);
         DefaultListModel listModel = new DefaultListModel();
-        for(String s: partners){
+        for (String s : partners) {
             listModel.addElement(s);
         }
+        if (partners.size() > 0) {
+            myList = new JList(listModel);
+            myList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+            myList.setLayoutOrientation(JList.VERTICAL);
+            myList.setSelectedIndex(0);
+            myList.setVisibleRowCount(-1);
+            listScroller = new JScrollPane(myList);
+            listScroller.setPreferredSize(new Dimension(250, 80));
 
-        myList = new JList(listModel);
-        myList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        myList.setLayoutOrientation(JList.VERTICAL);
-        myList.setVisibleRowCount(-1);
-        listScroller = new JScrollPane(myList);
-        listScroller.setPreferredSize(new Dimension(250, 80));
+        }else {
+            simpleGUI.showGUI();
+            simpleGUI.showError("The staffId that you selected has no associated menus.");
+        }
     }
 
     private void showEnterAmount(){
@@ -232,6 +243,7 @@ public class Option5 extends JPanel
 
         JRadioButton reservationButton = new JRadioButton("Reservation Payment");
         reservationButton.setActionCommand("Reservation");
+        reservationButton.setSelected(true);
 
         //Group the radio buttons.
         group = new ButtonGroup();

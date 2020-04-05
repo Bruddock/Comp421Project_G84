@@ -32,7 +32,7 @@ public class Option4 extends JPanel
     protected static String dishTarget;
     protected static int menuIdTarget;
 
-    private int choice;
+    private int choice = 4;
 
     public Option4() throws SQLException {
         Border raisedbevel = BorderFactory.createRaisedBevelBorder();
@@ -203,6 +203,7 @@ public class Option4 extends JPanel
         myList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         myList.setLayoutOrientation(JList.VERTICAL);
         myList.setVisibleRowCount(-1);
+        myList.setSelectedIndex(0);
         listScroller = new JScrollPane(myList);
         listScroller.setPreferredSize(new Dimension(250, 80));
     }
@@ -221,6 +222,7 @@ public class Option4 extends JPanel
 
         JRadioButton viewButton = new JRadioButton("View Menu");
         viewButton.setActionCommand("View");
+        viewButton.setSelected(true);
 
         //Group the radio buttons.
         group = new ButtonGroup();
@@ -262,6 +264,7 @@ public class Option4 extends JPanel
             myList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
             myList.setLayoutOrientation(JList.VERTICAL);
             myList.setVisibleRowCount(-1);
+            myList.setSelectedIndex(0);
             listScroller = new JScrollPane(myList);
             listScroller.setPreferredSize(new Dimension(250, 80));
         } else {
