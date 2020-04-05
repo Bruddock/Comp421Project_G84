@@ -86,7 +86,7 @@ public class simpleApp {
         String url = "jdbc:postgresql://comp421.cs.mcgill.ca:5432/cs421";
         Connection con = DriverManager.getConnection(url, "cs421g84", "reduce2084");
         Statement statement = con.createStatement();
-        String querySQL = "select emailaddress from customer where emailaddress LIKE 'C__@%' OR emailaddress LIKE 'C_@%'";
+        String querySQL = "select emailaddress from customer where emailaddress LIKE 'C__@%' OR emailaddress LIKE 'C_@%' AND emailaddress NOT LIKE 'C2@%'";
         java.sql.ResultSet rs = statement.executeQuery(querySQL);
         ArrayList<String> addresses = new ArrayList<>();
         while (rs.next()) {
@@ -905,7 +905,8 @@ public class simpleApp {
         String url = "jdbc:postgresql://comp421.cs.mcgill.ca:5432/cs421";
         Connection con = DriverManager.getConnection(url, "cs421g84", "reduce2084");
         Statement statement = con.createStatement();
-        statement.executeUpdate("update contains set name = '" + newDish + "' where menuid = " + menuid + " and name = '" + targetdish + "'");
+//        statement.executeUpdate("update contains set name = '" + newDish + "' where menuid = " + menuid + " and name = '" + targetdish + "'");
+        System.out.println("update contains set name = '" + newDish + "' where menuid = " + menuid + " and name = '" + targetdish + "'");
     }
 
     public static void addDish(int menuid, String newDish) throws SQLException {
@@ -921,8 +922,10 @@ public class simpleApp {
         String url = "jdbc:postgresql://comp421.cs.mcgill.ca:5432/cs421";
         Connection con = DriverManager.getConnection(url, "cs421g84", "reduce2084");
         Statement statement = con.createStatement();
-        statement.executeUpdate("insert into contains values (" + menuid + ", '" + newDish + "')");
-        statement.executeUpdate("update menu set numcourses = numcourses + 1 where menuid = " + menuid);
+//        statement.executeUpdate("insert into contains values (" + menuid + ", '" + newDish + "')");
+//        statement.executeUpdate("update menu set numcourses = numcourses + 1 where menuid = " + menuid);
+        System.out.println("insert into contains values (" + menuid + ", '" + newDish + "') \n"  + "update menu set numcourses = numcourses + 1 where menuid = " + menuid);
+
     }
 
     public static void removeDish(int menuid, String targetdish) throws SQLException {
@@ -1001,7 +1004,7 @@ public class simpleApp {
         String url = "jdbc:postgresql://comp421.cs.mcgill.ca:5432/cs421";
         Connection con = DriverManager.getConnection(url, "cs421g84", "reduce2084");
         Statement statement = con.createStatement();
-        String querySQL = "select reservationid from has";
+        String querySQL = "select reservationid from has order by reservationid";
         java.sql.ResultSet rs = statement.executeQuery(querySQL);
         ArrayList<String> reservations = new ArrayList<>();
         while (rs.next()) {

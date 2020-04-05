@@ -94,17 +94,19 @@ public class Option1 extends JPanel
                 }
                 selectButton.setText("Select Invoice");
                 selectButton.setActionCommand("Select Invoice");
+                information.setText("Option 1: Please select the desired invoice to alter.");
                 this.add(listScroller,BorderLayout.CENTER);
                 listScroller.setVisible(true);
                 this.setVisible(true);
                 break;
             case "Select Invoice":
                 System.out.println(myList.getSelectedValue());
-                invoiceIdTarget = invoiceid.get(invoices.indexOf((String) myList.getSelectedValue()));
+                invoiceIdTarget = invoiceid.get(invoices.indexOf(myList.getSelectedValue()));
                 this.setVisible(false);
                 listScroller.setVisible(false);
                 showUpdateOptions();
                 buttonSelector.remove(selectButton);
+                information.setText("Option 1: Please select an updated invoice status.");
                 this.add(radioPanel, BorderLayout.CENTER);
                 this.setVisible(true);
                 break;
@@ -135,20 +137,26 @@ public class Option1 extends JPanel
     }
 
     private void showInvoices(String Address) throws SQLException {
-        System.out.println("were here " + Address);
+//        invoices = new ArrayList<>();
         invoices = simpleApp.getInvoices(Address);
-        invoiceid =simpleApp.getInvoiceId(Address);
+        invoiceid = simpleApp.getInvoiceId(Address);
         DefaultListModel listModel = new DefaultListModel();
 //        invoices.add(Address + " part 2");
         for(String s: invoices){
             listModel.addElement(s);
         }
-        myList = new JList(listModel);
-        myList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        myList.setLayoutOrientation(JList.VERTICAL);
-        myList.setVisibleRowCount(-1);
-        listScroller = new JScrollPane(myList);
-        listScroller.setPreferredSize(new Dimension(250, 80));
+        if (invoices.size() > 0) {
+            myList = new JList(listModel);
+            myList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+            myList.setLayoutOrientation(JList.VERTICAL);
+            myList.setVisibleRowCount(-1);
+            listScroller = new JScrollPane(myList);
+            listScroller.setPreferredSize(new Dimension(250, 80));
+        } else {
+            simpleGUI.showGUI();
+            simpleGUI.showError("The customer you selected had no associated invoices.");
+        }
+
 
     }
 

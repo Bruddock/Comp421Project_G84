@@ -106,6 +106,7 @@ public class Option3 extends JPanel
                 showCancelOptions();
                 selectButton.setText("Submit");
                 selectButton.setActionCommand("Submit");
+                information.setText("Option 3: Are you sure that you want to cancel event: " + myList.getSelectedValue());
                 this.add(new JLabel("Would you like to cancel this reservation: " + myList.getSelectedValue()), BorderLayout.CENTER);
                 this.add(radioPanel, BorderLayout.CENTER);
                 radioPanel.setVisible(true);
@@ -121,6 +122,7 @@ public class Option3 extends JPanel
                 } catch (SQLException ex) {
                     ex.printStackTrace();
                 }
+                information.setText("Option 3: Please select the event.");
                 selectButton.setText("Select Event");
                 selectButton.setActionCommand("Select Event");
                 this.add(listScroller, BorderLayout.CENTER);
@@ -136,6 +138,7 @@ public class Option3 extends JPanel
                 } catch (SQLException ex) {
                     ex.printStackTrace();
                 }
+                information.setText("Option 3: Please select the reservation.");
                 selectButton.setText("Select Reservation");
                 selectButton.setActionCommand("Select Reservation");
                 this.add(listScroller, BorderLayout.CENTER);
@@ -177,30 +180,39 @@ public class Option3 extends JPanel
         for(String s: events){
             listModel.addElement(s);
         }
-
-        myList = new JList(listModel);
-        myList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        myList.setLayoutOrientation(JList.VERTICAL);
-        myList.setVisibleRowCount(-1);
-        listScroller = new JScrollPane(myList);
-        listScroller.setPreferredSize(new Dimension(250, 80));
+        if(events.size() >0) {
+            myList = new JList(listModel);
+            myList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+            myList.setLayoutOrientation(JList.VERTICAL);
+            myList.setVisibleRowCount(-1);
+            listScroller = new JScrollPane(myList);
+            listScroller.setPreferredSize(new Dimension(250, 80));
+        } else {
+            simpleGUI.showGUI();
+            simpleGUI.showError("The reservation that you selected has no event associated.");
+        }
     }
 
-    private void showReservations(String selectedValue) throws SQLException{
+    private void showReservations(String selectedValue) throws SQLException {
 
         reservations = simpleApp.getReservations(selectedValue);
         reservationid = simpleApp.getReservationIds(selectedValue);
         DefaultListModel listModel = new DefaultListModel();
-        for(String s: reservations){
+        for (String s : reservations) {
             listModel.addElement(s);
         }
+        if (reservations.size() > 0) {
+            myList = new JList(listModel);
+            myList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+            myList.setLayoutOrientation(JList.VERTICAL);
+            myList.setVisibleRowCount(-1);
+            listScroller = new JScrollPane(myList);
+            listScroller.setPreferredSize(new Dimension(250, 80));
 
-        myList = new JList(listModel);
-        myList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        myList.setLayoutOrientation(JList.VERTICAL);
-        myList.setVisibleRowCount(-1);
-        listScroller = new JScrollPane(myList);
-        listScroller.setPreferredSize(new Dimension(250, 80));
+        }else {
+            simpleGUI.showGUI();
+            simpleGUI.showError("The customer you selected has no reservations associated.");
+        }
     }
 
     private static void showAddressList() throws SQLException {

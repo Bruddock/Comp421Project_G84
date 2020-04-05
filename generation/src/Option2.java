@@ -89,6 +89,7 @@ public class Option2 extends JPanel
                         orderIngredients();
                     } catch (SQLException ex) {
                         ex.printStackTrace();
+
                     }
                     simpleGUI.showGUI();
                     break;
@@ -104,6 +105,7 @@ public class Option2 extends JPanel
                     }
                     selectButton.setText("Confirm Dates");
                     selectButton.setActionCommand("Confirm Dates");
+                    information.setText("Option 2: Please select the date when you want your ingredients ready.");
                     this.add(datePanel,BorderLayout.CENTER);
                     datePanel.setVisible(true);
                     this.setVisible(true);
@@ -120,6 +122,7 @@ public class Option2 extends JPanel
                     }
                     selectButton.setText("Make Order");
                     selectButton.setActionCommand("Make Order");
+                    information.setText("Option 2: Please select the company you wish to order from.");
                     this.add(listScroller,BorderLayout.CENTER);
                     listScroller.setVisible(true);
                     this.setVisible(true);
@@ -136,6 +139,7 @@ public class Option2 extends JPanel
                     }
                     selectButton.setText("Save Options");
                     selectButton.setActionCommand("Save Options");
+                    information.setText("Option 2: Please enter the name, quantity and delivery preference of the desired ingredient.");
                     this.add(ingredientPanel, BorderLayout.CENTER);
                     this.setVisible(true);
                     break;
@@ -151,6 +155,7 @@ public class Option2 extends JPanel
                     }
                     selectButton.setText("Select Dish");
                     selectButton.setActionCommand("Select Dish");
+                    information.setText("Option 2: Please select a dish you wish to order for.");
                     this.add(listScroller,BorderLayout.CENTER);
                     listScroller.setVisible(true);
                     this.setVisible(true);
@@ -167,6 +172,7 @@ public class Option2 extends JPanel
                     }
                     selectButton.setText("Select Menu");
                     selectButton.setActionCommand("Select Menu");
+                    information.setText("Option 2: Please select a menu you wish to order for.");
                     this.add(listScroller,BorderLayout.CENTER);
                     listScroller.setVisible(true);
                     this.setVisible(true);
@@ -193,35 +199,51 @@ public class Option2 extends JPanel
         }
 
         public void showMenu() throws SQLException {
+//            menuList = new ArrayList<>();
+//            menuId = new ArrayList<>();
+//            menuList.add("tester comp");
+//            menuId.add(1);
             menuList = simpleApp.getMenu(staffIdTarget);
             menuId = simpleApp.getMenuId(staffIdTarget);
             DefaultListModel listModel = new DefaultListModel();
             for(String s: menuList){
                 listModel.addElement(s);
             }
-            myList = new JList(listModel);
-            myList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-            myList.setLayoutOrientation(JList.VERTICAL);
-            myList.setVisibleRowCount(-1);
-            listScroller = new JScrollPane(myList);
-            listScroller.setPreferredSize(new Dimension(250, 80));
-
+            if(menuList.size()>0) {
+                myList = new JList(listModel);
+                myList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+                myList.setLayoutOrientation(JList.VERTICAL);
+                myList.setVisibleRowCount(-1);
+                listScroller = new JScrollPane(myList);
+                listScroller.setPreferredSize(new Dimension(250, 80));
+            } else {
+                simpleGUI.showGUI();
+                simpleGUI.showError("The staffId that you selected has no associated menus.");
+            }
         }
 
         public void showDish() throws SQLException {
+//            dishList = new ArrayList<>();
+//            dishId = new ArrayList<>();
+//            dishList.add("tester comp");
+//            dishId.add("tester comp");
             dishList = simpleApp.getDish(menuIdTarget);
             dishId = simpleApp.getDishName(menuIdTarget);
             DefaultListModel listModel = new DefaultListModel();
             for(String s: dishList){
                 listModel.addElement(s);
             }
-            myList = new JList(listModel);
-            myList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-            myList.setLayoutOrientation(JList.VERTICAL);
-            myList.setVisibleRowCount(-1);
-            listScroller = new JScrollPane(myList);
-            listScroller.setPreferredSize(new Dimension(250, 80));
-
+            if(dishList.size()>0) {
+                myList = new JList(listModel);
+                myList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+                myList.setLayoutOrientation(JList.VERTICAL);
+                myList.setVisibleRowCount(-1);
+                listScroller = new JScrollPane(myList);
+                listScroller.setPreferredSize(new Dimension(250, 80));
+            } else {
+                simpleGUI.showGUI();
+                simpleGUI.showError("The menu that you selected has no dishes associated.");
+            }
         }
 
         public void showIngredientsOptions() throws SQLException {
@@ -259,6 +281,8 @@ public class Option2 extends JPanel
         }
 
         public void showCompanies() throws SQLException {
+//            companyList = new ArrayList<>();
+//            companyList.add("tester comp");
             companyList = simpleApp.getCompany(deliver);
             DefaultListModel listModel = new DefaultListModel();
             for(String s: companyList){
@@ -319,9 +343,26 @@ public class Option2 extends JPanel
 
         public void orderIngredients() throws SQLException {
             String date = "";
-            date += (yearGroup.getSelection()).getActionCommand() + "-";
-            date += (monthGroup.getSelection()).getActionCommand() + "-";
-            date += (dayGroup.getSelection()).getActionCommand();
-            simpleApp.orderIngredients(companyIdTarget, dishIdTarget, date, Integer.parseInt(quantity.getText()), ingredientName.getText());
+            try {
+                date += (yearGroup.getSelection()).getActionCommand() + "-";
+                date += (monthGroup.getSelection()).getActionCommand() + "-";
+                date += (dayGroup.getSelection()).getActionCommand();
+            } catch (Exception NullPointerException){
+                simpleGUI.showError("The date you set is not valid, setting date to today.");
+                date = "" + java.time.LocalDateTime.now();
+                date = date.substring(0, 10);
+                simpleGUI.showGUI();
+            }
+
+            int amount;
+            try{
+                amount = Integer.parseInt(quantity.getText());
+
+            } catch (Exception NumberFormatException){
+                amount = 10;
+                simpleGUI.showError("The amount you set is not an int, setting quantity to 10.");
+                simpleGUI.showGUI();
+            }
+            simpleApp.orderIngredients(companyIdTarget, dishIdTarget, date, amount, ingredientName.getText());
         }
 }

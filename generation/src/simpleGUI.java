@@ -20,7 +20,7 @@ public class simpleGUI extends JPanel
 
         Border raisedbevel = BorderFactory.createRaisedBevelBorder();
 
-        JLabel welcome = new JLabel("Hello, welcome to the catering co application.", JLabel.CENTER);
+        JLabel welcome = new JLabel("Hello, welcome to the catering co application. Please select an option from the list below.", JLabel.CENTER);
         welcome.setOpaque(true);
         welcome.setOpaque(true);
         welcome.setBackground(new Color(248, 213, 131));
@@ -70,8 +70,8 @@ public class simpleGUI extends JPanel
         b2.setToolTipText("This middle button does nothing when you click it.");
         b3.setToolTipText("Click this button to enable the middle button.");
 
-        setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
-
+//        setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+        setLayout(new GridLayout(0, 1));
         //Add Components to this container, using the default FlowLayout.
 //        add(Box.createRigidArea(new Dimension(10, 100)));
         add(welcome);
@@ -161,7 +161,7 @@ public class simpleGUI extends JPanel
                 frame.getContentPane().setVisible(true);
                 break;
             case "Option6": System.out.println("Option6");
-
+                System.exit(0);
                 break;
         }
     }
@@ -192,6 +192,7 @@ public class simpleGUI extends JPanel
 
         //Display the window.
         frame.pack();
+//        frame.setSize(1500, 1500);
         frame.setVisible(true);
     }
 
@@ -212,6 +213,13 @@ public class simpleGUI extends JPanel
     public static void showGUI(){
         frame.getContentPane().setVisible(false);
         addGUI();
+    }
+
+    public static void showError(String msg){
+        JOptionPane.showMessageDialog(frame,
+                msg,
+                "An error has occured, returning to main menu",
+                JOptionPane.PLAIN_MESSAGE);
     }
 
     public static void main(String[] args) {

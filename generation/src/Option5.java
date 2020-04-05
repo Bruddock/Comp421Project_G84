@@ -29,7 +29,7 @@ public class Option5 extends JPanel
     public Option5() throws SQLException {
         Border raisedbevel = BorderFactory.createRaisedBevelBorder();
 
-        information = new JLabel("Option 5.\n Would you like to create a customer or supplier invoice?", JLabel.CENTER);
+        information = new JLabel("Option 5.\n Would you like to create an invoice for an ingredients purchase or reservation payment?", JLabel.CENTER);
         information.setOpaque(true);
         information.setOpaque(true);
         information.setBackground(new Color(248, 213, 131));
@@ -77,6 +77,7 @@ public class Option5 extends JPanel
                 partnersId = (String) myList.getSelectedValue();
                 listScroller.setVisible(false);
                 showEnterAmount();
+                information.setText("Option 5: Please enter the amount for this invoice.");
                 selectButton.setText("Enter Amount");
                 selectButton.setActionCommand("Enter Amount");
                 this.add(amountPanel, BorderLayout.CENTER);
@@ -92,8 +93,15 @@ public class Option5 extends JPanel
                 } catch (SQLException ex) {
                     ex.printStackTrace();
                 }
-                if(decision) selectButton.setText("Select Supplier");
-                else selectButton.setText("Select Client Email");
+                if(decision) {
+                    information.setText("Option 5: Please select the supplier to send this invoice to.");
+                    selectButton.setText("Select Supplier");
+                }
+                else {
+                    information.setText("Option 5: Please select the customer to send this invoice to.");
+                    selectButton.setText("Select Client Email");
+                }
+
                 selectButton.setActionCommand("Select Partner");
                 this.add(listScroller, BorderLayout.CENTER);
                 listScroller.setVisible(true);
@@ -114,6 +122,7 @@ public class Option5 extends JPanel
                 showAssociatedOptions(decision);
                 selectButton.setText("Select Option");
                 selectButton.setActionCommand("Select Option");
+                information.setText("Option 5: Select the type of client to see the corresponding list.");
                 this.add(radioPanel, BorderLayout.CENTER);
                 radioPanel.setVisible(true);
                 this.setVisible(true);
@@ -127,6 +136,7 @@ public class Option5 extends JPanel
                 } catch (SQLException ex) {
                     ex.printStackTrace();
                 }
+                information.setText("Option 5: Please select the account you wish to be associated with this invoice.");
                 selectButton.setText("Select Account");
                 selectButton.setActionCommand("Select Account");
                 this.add(listScroller, BorderLayout.CENTER);

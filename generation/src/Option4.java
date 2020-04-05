@@ -37,7 +37,7 @@ public class Option4 extends JPanel
     public Option4() throws SQLException {
         Border raisedbevel = BorderFactory.createRaisedBevelBorder();
 
-        information = new JLabel("Option 4.\n View or modify a menu.?", JLabel.CENTER);
+        information = new JLabel("Option 4.\n Select your reservation ID to view or modify a menu.", JLabel.CENTER);
         information.setOpaque(true);
         information.setOpaque(true);
         information.setBackground(new Color(248, 213, 131));
@@ -84,6 +84,7 @@ public class Option4 extends JPanel
             case "Replace Item":
                 System.out.println(e.getActionCommand());
                 System.out.println(newdish.getText());
+                dishTarget = (String) myList.getSelectedValue();
                 try {
                     simpleApp.replaceDish(menuIdTarget, dishTarget, newdish.getText());
                 } catch (SQLException ex) {
@@ -91,20 +92,11 @@ public class Option4 extends JPanel
                 }
                 simpleGUI.showGUI();
                 break;
-            case "Select Menu1":
-                System.out.println(e.getActionCommand());
-                this.setVisible(false);
-                listScroller.setVisible(false);
-                showNewDish();
-                this.add(newdishPanel, BorderLayout.CENTER);
-                selectButton.setText("Add Dish");
-                selectButton.setActionCommand("Add Dish");
-                newdishPanel.setVisible(true);
-                this.setVisible(true);
-                break;
             case "Select Menu2":
                 //doesnt need to show anything new... just calls remove.
                 System.out.println(e.getActionCommand());
+                System.out.println((String) myList.getSelectedValue());
+                dishTarget = (String) myList.getSelectedValue();
                 try {
                     simpleApp.removeDish(menuIdTarget, dishTarget);
                 } catch (SQLException ex) {
@@ -118,6 +110,7 @@ public class Option4 extends JPanel
                 listScroller.setVisible(false);
                 showNewDish();
                 this.add(newdishPanel, BorderLayout.CENTER);
+                information.setText("Option 4: Please enter the name of the new dish.");
                 selectButton.setText("Replace Item");
                 selectButton.setActionCommand("Replace Item");
                 newdishPanel.setVisible(true);
@@ -135,22 +128,32 @@ public class Option4 extends JPanel
                 }
                 switch(choice){
                     case 1:
-                        selectButton.setText("Select Dish");
-                        selectButton.setActionCommand("Select Menu1");
+                        showNewDish();
+                        this.add(listScroller, BorderLayout.WEST);
+                        this.add(newdishPanel, BorderLayout.CENTER);
+                        selectButton.setText("Add Dish");
+                        selectButton.setActionCommand("Add Dish");
+                        information.setText("Option 4: Here are the current dishes associated with this menu.");
+                        newdishPanel.setVisible(true);
                         break;
                     case 2:
+                        this.add(listScroller, BorderLayout.CENTER);
                         selectButton.setText("Select Dish");
                         selectButton.setActionCommand("Select Menu2");
+                        information.setText("Option 4: Select a Menu to add to.");
                         break;
                     case 3:
+                        this.add(listScroller, BorderLayout.CENTER);
                         selectButton.setText("Select Dish");
                         selectButton.setActionCommand("Select Menu3");
+                        information.setText("Option 4: Select a Menu to add to.");
                         break;
                     case 4:
+                        this.add(listScroller, BorderLayout.CENTER);
                         buttonSelector.remove(selectButton);
+                        information.setText("Option 4: These are the dishes for the selected menu.");
                         break;
                 }
-                this.add(listScroller, BorderLayout.CENTER);
                 listScroller.setVisible(true);
                 this.setVisible(true);
                 break;
@@ -174,6 +177,7 @@ public class Option4 extends JPanel
                 showOptions();
                 selectButton.setText("Select Option");
                 selectButton.setActionCommand("Select Option");
+                information.setText("Option 4: What would you like to do to the menu.");
                 this.add(radioPanel, BorderLayout.CENTER);
                 radioPanel.setVisible(true);
                 this.setVisible(true);
@@ -244,10 +248,6 @@ public class Option4 extends JPanel
         newdishPanel.add(newdish);
     }
 
-    private void showRemove(){
-
-    }
-
     private void showDishes() throws SQLException {
         dishNames = new ArrayList<>();
         dishNames = simpleApp.getHasDish(Integer.parseInt(reservationIdTarget));
@@ -257,31 +257,18 @@ public class Option4 extends JPanel
         for(String s: dishNames){
             listModel.addElement(s);
         }
-
-        myList = new JList(listModel);
-        myList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        myList.setLayoutOrientation(JList.VERTICAL);
-        myList.setVisibleRowCount(-1);
-        listScroller = new JScrollPane(myList);
-        listScroller.setPreferredSize(new Dimension(250, 80));
+        if(dishNames.size()>0) {
+            myList = new JList(listModel);
+            myList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+            myList.setLayoutOrientation(JList.VERTICAL);
+            myList.setVisibleRowCount(-1);
+            listScroller = new JScrollPane(myList);
+            listScroller.setPreferredSize(new Dimension(250, 80));
+        } else {
+            simpleGUI.showGUI();
+            simpleGUI.showError("The reservation's menu that you selected has no dishes associated.");
+        }
     }
 
-
-//    private void showMenus() throws SQLException {
-//        menus = new ArrayList<>();
-//        menus = simpleApp.get();
-////        reservations.add("test");
-//        DefaultListModel listModel = new DefaultListModel();
-//        for(String s: reservations){
-//            listModel.addElement(s);
-//        }
-//
-//        myList = new JList(listModel);
-//        myList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-//        myList.setLayoutOrientation(JList.VERTICAL);
-//        myList.setVisibleRowCount(-1);
-//        listScroller = new JScrollPane(myList);
-//        listScroller.setPreferredSize(new Dimension(250, 80));
-//    }
 
 }
