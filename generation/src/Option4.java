@@ -18,7 +18,9 @@ public class Option4 extends JPanel
     protected JPanel radioPanel;
 
     protected static JList myList;
+    protected static JList myList2;
     protected JScrollPane listScroller;
+    protected JScrollPane listScroller2;
 
     protected static ArrayList<String> reservations;
     protected static String reservationIdTarget;
@@ -28,6 +30,7 @@ public class Option4 extends JPanel
 
     protected static ArrayList<String> menus;
     protected static ArrayList<String> dishNames;
+    protected static ArrayList<String> dishNamesAlt;
     protected static ArrayList<Integer> menuIds;
     protected static String dishTarget;
     protected static int menuIdTarget;
@@ -73,9 +76,9 @@ public class Option4 extends JPanel
         switch(e.getActionCommand()){
             case "Add Dish":
                 System.out.println(e.getActionCommand());
-                System.out.println(newdish.getText());
+                System.out.println((String) myList2.getSelectedValue());
                 try {
-                    simpleApp.addDish(menuIdTarget, newdish.getText());
+                    simpleApp.addDish(menuIdTarget, (String) myList2.getSelectedValue());
                 } catch (SQLException ex) {
                     ex.printStackTrace();
                 }
@@ -83,10 +86,10 @@ public class Option4 extends JPanel
                 break;
             case "Replace Item":
                 System.out.println(e.getActionCommand());
-                System.out.println(newdish.getText());
+                System.out.println((String) myList2.getSelectedValue());
                 dishTarget = (String) myList.getSelectedValue();
                 try {
-                    simpleApp.replaceDish(menuIdTarget, dishTarget, newdish.getText());
+                    simpleApp.replaceDish(menuIdTarget, dishTarget, (String) myList2.getSelectedValue());
                 } catch (SQLException ex) {
                     ex.printStackTrace();
                 }
@@ -109,11 +112,12 @@ public class Option4 extends JPanel
                 this.setVisible(false);
                 listScroller.setVisible(false);
                 showNewDish();
-                this.add(newdishPanel, BorderLayout.CENTER);
-                information.setText("Option 4: Please enter the name of the new dish.");
+                this.remove(listScroller);
+                this.add(listScroller2, BorderLayout.CENTER);
+                information.setText("Option 4: Please select dish you wish to add from our registered dishes.");
                 selectButton.setText("Replace Item");
                 selectButton.setActionCommand("Replace Item");
-                newdishPanel.setVisible(true);
+                listScroller2.setVisible(true);
                 this.setVisible(true);
                 break;
             case "Select Option":
@@ -128,25 +132,24 @@ public class Option4 extends JPanel
                 }
                 switch(choice){
                     case 1:
-                        showNewDish();
-                        this.add(listScroller, BorderLayout.WEST);
-                        this.add(newdishPanel, BorderLayout.CENTER);
+//                        this.add(listScroller, BorderLayout.WEST);
+                        this.add(listScroller2, BorderLayout.CENTER);
                         selectButton.setText("Add Dish");
                         selectButton.setActionCommand("Add Dish");
-                        information.setText("Option 4: Here are the current dishes associated with this menu.");
-                        newdishPanel.setVisible(true);
+                        information.setText("Option 4: Select one of our registered dishes to add to this meeting.");
+                        listScroller2.setVisible(true);
                         break;
                     case 2:
                         this.add(listScroller, BorderLayout.CENTER);
                         selectButton.setText("Select Dish");
                         selectButton.setActionCommand("Select Menu2");
-                        information.setText("Option 4: Select a Menu to add to.");
+                        information.setText("Option 4: Select a dish to delete from this menu.");
                         break;
                     case 3:
                         this.add(listScroller, BorderLayout.CENTER);
                         selectButton.setText("Select Dish");
                         selectButton.setActionCommand("Select Menu3");
-                        information.setText("Option 4: Select a Menu to add to.");
+                        information.setText("Option 4: Select a dish to replace.");
                         break;
                     case 4:
                         this.add(listScroller, BorderLayout.CENTER);
@@ -253,13 +256,25 @@ public class Option4 extends JPanel
     private void showDishes() throws SQLException {
         dishNames = new ArrayList<>();
         dishNames = simpleApp.getHasDish(Integer.parseInt(reservationIdTarget));
+        dishNamesAlt = simpleApp.getOtherDish(Integer.parseInt(reservationIdTarget));
         menuIdTarget = Integer.parseInt(reservationIdTarget);
-//        dishNames.add("test");
         DefaultListModel listModel = new DefaultListModel();
         for(String s: dishNames){
             listModel.addElement(s);
         }
+        DefaultListModel listModel2 = new DefaultListModel();
+        for(String s: dishNamesAlt){
+            listModel2.addElement(s);
+        }
         if(dishNames.size()>0) {
+            myList2 = new JList(listModel2);
+            myList2.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+            myList2.setLayoutOrientation(JList.VERTICAL);
+            myList2.setVisibleRowCount(-1);
+            myList2.setSelectedIndex(0);
+            listScroller2 = new JScrollPane(myList2);
+            listScroller2.setPreferredSize(new Dimension(250, 80));
+
             myList = new JList(listModel);
             myList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
             myList.setLayoutOrientation(JList.VERTICAL);

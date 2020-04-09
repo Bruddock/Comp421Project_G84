@@ -364,7 +364,7 @@ public class Option2 extends JPanel
 
             } catch (Exception NumberFormatException){
                 amount = 10;
-                simpleGUI.showError("The amount you set is not an int, setting quantity to 10.");
+                simpleGUI.showError("The amount you set is not an int, returning to main.");
                 simpleGUI.showGUI();
             }
             simpleApp.orderIngredients(companyIdTarget, dishIdTarget, date, amount, ingredientName.getText());

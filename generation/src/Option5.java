@@ -63,9 +63,17 @@ public class Option5 extends JPanel
         switch(e.getActionCommand()){
             case "Enter Amount":
                 System.out.println(e.getActionCommand());
-                System.out.println(Integer.parseInt(amount.getText()));
+//                System.out.println(Integer.parseInt(amount.getText()));
+                int amountNum = 0;
                 try {
-                    simpleApp.createInvoice(decision, partnersId, Integer.parseInt(amount.getText()), accountIdTarget);
+                    amountNum = Integer.parseInt(amount.getText());
+                } catch (Exception NumberFormatException){
+                    simpleGUI.showError("The amount you set is not an int, returning to main.");
+                    simpleGUI.showGUI();
+                    break;
+                }
+                try {
+                    simpleApp.createInvoice(decision, partnersId, amountNum, accountIdTarget);
                 } catch (SQLException ex) {
                     ex.printStackTrace();
                 }
@@ -231,7 +239,7 @@ public class Option5 extends JPanel
     private void showEnterAmount(){
         amount = new JTextField(10);
         amountPanel = new JPanel(new GridLayout(1,0));
-        amountPanel.add(new JLabel("Enter the quantity you want to order."));
+        amountPanel.add(new JLabel("Enter the amount for this invoice"));
         amountPanel.add(amount);
     }
 

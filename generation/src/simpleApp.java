@@ -92,6 +92,8 @@ public class simpleApp {
         while (rs.next()) {
             addresses.add(rs.getString(1));
         }
+        statement.close();
+        con.close();
         return addresses;
     }
 
@@ -126,6 +128,8 @@ public class simpleApp {
             invoices.add(currentIndex);
             invoiceid.add(rs.getInt(4));
         }
+        statement.close();
+        con.close();
         return invoices;
     }
 
@@ -149,6 +153,8 @@ public class simpleApp {
         while (rs.next()) {
             invoiceid.add(rs.getInt(4));
         }
+        statement.close();
+        con.close();
         return invoiceid;
     }
 
@@ -169,11 +175,13 @@ public class simpleApp {
         rs.next();
         System.out.println("before: " + rs.getInt(4) + " , " + rs.getString(5));
         String insertString = "update invoice set status = '" + status + "' where invoiceid = " + invoiceId;
-//        statement.executeUpdate(insertString);
+        statement.executeUpdate(insertString);
         System.out.println(insertString);
         rs = statement.executeQuery("select * from invoice where invoiceid = " + invoiceId);
         rs.next();
         System.out.println("after: " + rs.getInt(4) + " , " + rs.getString(5));
+        statement.close();
+        con.close();
     }
 
     public static void runOptionOne(Scanner scanner, Statement statement) throws SQLException {
@@ -460,7 +468,7 @@ public class simpleApp {
         String insertSQL = "insert into ingredients values ('" + company + "' , '" + targetDish + "' , '" + today + "' , '" + dDate + "' , " + quantity + " , '" + ingredientName + "')";
 //        String insertSQL = "insert into ingredients values ('" + company + "' , '" + targetDish + "' , '" + today + "' , '" + today + "' , " + quantity + " , '" + ingredientName + "')";
         System.out.println(insertSQL);
-//        statement.executeUpdate(insertSQL);
+        statement.executeUpdate(insertSQL);
     }
 
     public static void runOptionTwo(Scanner scanner, Statement statement) throws SQLException {
@@ -645,6 +653,7 @@ public class simpleApp {
         System.out.println(insertSQL);
         statement.executeUpdate(insertSQL);
         System.out.println("Returning to main menu.");
+
     }
 
     public static void updateEvent(int resId) throws SQLException {
@@ -662,19 +671,21 @@ public class simpleApp {
         //has (menu)
         String insertString = "delete from has where reservationid = " + resId;
         System.out.println(insertString);
-//        statement.executeUpdate(insertString);
+        statement.executeUpdate(insertString);
         //staffed by
         insertString = "delete from staffby where reservationid = " + resId;
         System.out.println(insertString);
-//        statement.executeUpdate(insertString);
+        statement.executeUpdate(insertString);
         //event
         insertString = "delete from event where reservationid = " + resId;
         System.out.println(insertString);
-//        statement.executeUpdate(insertString);
+        statement.executeUpdate(insertString);
         //reservation
         insertString = "delete from reservation where reservationid = " + resId;
         System.out.println(insertString);
-//        statement.executeUpdate(insertString);
+        statement.executeUpdate(insertString);
+        statement.close();
+        con.close();
     }
 
     public static ArrayList<String> getEvents(int selected) throws SQLException {
@@ -707,6 +718,8 @@ public class simpleApp {
             currentIndex = currentIndex + rs.getInt(9);
             events.add(currentIndex);
         }
+        statement.close();
+        con.close();
         return events;
     }
 
@@ -730,6 +743,8 @@ public class simpleApp {
         while (rs.next()) {
             reservationids.add(rs.getInt(3));
         }
+        statement.close();
+        con.close();
         return reservationids;
     }
 
@@ -760,6 +775,8 @@ public class simpleApp {
             }
             reservations.add(currentIndex);
         }
+        statement.close();
+        con.close();
         return reservations;
     }
 
@@ -892,7 +909,7 @@ public class simpleApp {
         }
     }
 
-    public static void replaceDish(int menuid, String targetdish, String newDish) throws SQLException {
+    public static void replaceDish(int reservationid, String targetdish, String newDish) throws SQLException {
         // Register the driver.  You must register the driver before you can use it.
         try {
             DriverManager.registerDriver(new org.postgresql.Driver());
@@ -905,11 +922,15 @@ public class simpleApp {
         String url = "jdbc:postgresql://comp421.cs.mcgill.ca:5432/cs421";
         Connection con = DriverManager.getConnection(url, "cs421g84", "reduce2084");
         Statement statement = con.createStatement();
-//        statement.executeUpdate("update contains set name = '" + newDish + "' where menuid = " + menuid + " and name = '" + targetdish + "'");
+        java.sql.ResultSet rs = statement.executeQuery("select menuid from has where reservationid = '" + reservationid + "'");
+        rs.next();
+        String menuid = rs.getString(1);
         System.out.println("update contains set name = '" + newDish + "' where menuid = " + menuid + " and name = '" + targetdish + "'");
+
+        statement.executeUpdate("update contains set name = '" + newDish + "' where menuid = " + menuid + " and name = '" + targetdish + "'");
     }
 
-    public static void addDish(int menuid, String newDish) throws SQLException {
+    public static void addDish(int reservationid, String newDish) throws SQLException {
 // Register the driver.  You must register the driver before you can use it.
         try {
             DriverManager.registerDriver(new org.postgresql.Driver());
@@ -922,13 +943,18 @@ public class simpleApp {
         String url = "jdbc:postgresql://comp421.cs.mcgill.ca:5432/cs421";
         Connection con = DriverManager.getConnection(url, "cs421g84", "reduce2084");
         Statement statement = con.createStatement();
-//        statement.executeUpdate("insert into contains values (" + menuid + ", '" + newDish + "')");
-//        statement.executeUpdate("update menu set numcourses = numcourses + 1 where menuid = " + menuid);
+        java.sql.ResultSet rs = statement.executeQuery("select menuid from has where reservationid = '" + reservationid + "'");
+        rs.next();
+        String menuid = rs.getString(1);
         System.out.println("insert into contains values (" + menuid + ", '" + newDish + "') \n"  + "update menu set numcourses = numcourses + 1 where menuid = " + menuid);
 
+        statement.executeUpdate("insert into contains values (" + menuid + ", '" + newDish + "')");
+        statement.executeUpdate("update menu set numcourses = numcourses + 1 where menuid = " + menuid);
+        statement.close();
+        con.close();
     }
 
-    public static void removeDish(int menuid, String targetdish) throws SQLException {
+    public static void removeDish(int reservationid, String targetdish) throws SQLException {
 // Register the driver.  You must register the driver before you can use it.
         try {
             DriverManager.registerDriver(new org.postgresql.Driver());
@@ -941,9 +967,14 @@ public class simpleApp {
         String url = "jdbc:postgresql://comp421.cs.mcgill.ca:5432/cs421";
         Connection con = DriverManager.getConnection(url, "cs421g84", "reduce2084");
         Statement statement = con.createStatement();
+        java.sql.ResultSet rs = statement.executeQuery("select menuid from has where reservationid = '" + reservationid + "'");
+        rs.next();
+        String menuid = rs.getString(1);
         System.out.println("delete from contains where menuid = " + menuid + " and name = '" + targetdish + "' \n " + "update menu set numcourses = numcourses - 1 where menuid = " + menuid);
-//        statement.executeUpdate("delete from contains where menuid = " + menuid + " and name = '" + targetdish + "'");
-//        statement.executeUpdate("update menu set numcourses = numcourses - 1 where menuid = " + menuid);
+        statement.executeUpdate("delete from contains where menuid = " + menuid + " and name = '" + targetdish + "'");
+        statement.executeUpdate("update menu set numcourses = numcourses - 1 where menuid = " + menuid);
+        statement.close();
+        con.close();
     }
 
     public static int getResMenuId(int resId) throws SQLException {
@@ -962,7 +993,38 @@ public class simpleApp {
         Statement statement = con.createStatement();
         java.sql.ResultSet rs = statement.executeQuery("select menuid from has where reservationid = '" + resId + "'");
         rs.next();
-        return rs.getInt(1);
+        int ret = rs.getInt(1);
+        statement.close();
+        con.close();
+        return ret;
+    }
+
+    public static ArrayList<String> getOtherDish(int resId) throws SQLException {
+
+        // Register the driver.  You must register the driver before you can use it.
+        try {
+            DriverManager.registerDriver(new org.postgresql.Driver());
+        } catch (Exception cnfe) {
+            System.out.println("Class not found");
+        }
+
+        // This is the url you must use for Postgresql.
+        //Note: This url may not valid now !
+        String url = "jdbc:postgresql://comp421.cs.mcgill.ca:5432/cs421";
+        Connection con = DriverManager.getConnection(url, "cs421g84", "reduce2084");
+        Statement statement = con.createStatement();
+        java.sql.ResultSet rs = statement.executeQuery("select menuid from has where reservationid = '" + resId + "'");
+        rs.next();
+        String menuid = rs.getString(1);
+//        System.out.println("select name from dish where name not in (select name from contains where menuid = '" + menuid + "')");
+        rs = statement.executeQuery("select name from dish where name not in (select name from contains where menuid = '" + menuid + "')");
+        ArrayList<String> dishes = new ArrayList<>();
+        while (rs.next()) {
+            dishes.add(rs.getString(1));
+        }
+        statement.close();
+        con.close();
+        return dishes;
     }
 
     public static ArrayList<String> getHasDish(int resId) throws SQLException {
@@ -987,6 +1049,8 @@ public class simpleApp {
         while (rs.next()) {
             dishes.add(rs.getString(1));
         }
+        statement.close();
+        con.close();
         return dishes;
     }
 
@@ -1010,6 +1074,8 @@ public class simpleApp {
         while (rs.next()) {
             reservations.add(rs.getString(1));
         }
+        statement.close();
+        con.close();
         return reservations;
     }
 
@@ -1183,9 +1249,11 @@ public class simpleApp {
 
         String querySQL;
         if(decision) querySQL = "insert into invoice Values( '" + today + "' , " + amount + " , 'ingredients purchase' , " + invoiceid + " , 'pending' , null , '" + option + "' , " + acctid + " )";
-        else querySQL = "insert into invoice Values( '" + today + "' , " + amount + " , 'ingredients purchase' , " + invoiceid + " , 'pending' , '" + option + "' , null , " + acctid + ")";
+        else querySQL = "insert into invoice Values( '" + today + "' , " + amount + " , 'reservation payment' , " + invoiceid + " , 'pending' , '" + option + "' , null , " + acctid + ")";
         System.out.println(querySQL);
-//        statement.executeUpdate(querySQL);
+        statement.executeUpdate(querySQL);
+        statement.close();
+        con.close();
     }
 
     public static ArrayList<String> getPartners(boolean decision, boolean option, int accountId) throws SQLException {
@@ -1223,6 +1291,8 @@ public class simpleApp {
         while (rs.next()) {
             ids.add(rs.getString(1));
         }
+        statement.close();
+        con.close();
         return ids;
     }
 
@@ -1248,6 +1318,8 @@ public class simpleApp {
         while (rs.next()) {
             ids.add(rs.getInt(1));
         }
+        statement.close();
+        con.close();
         return ids;
     }
 
@@ -1275,6 +1347,7 @@ public class simpleApp {
             }
         }
         System.out.println("Returning to the main menu.");
+
     }
 
     private static void createIngredientInvoice(Scanner scanner, Statement statement) throws SQLException {
@@ -1493,7 +1566,7 @@ public class simpleApp {
         int invoiceid = x.nextInt(10000) + 30000;
 
 
-        querySQL = "insert into invoice Values( '" + today + "' , " + amount + " , 'ingredients purchase' , " + invoiceid + " , 'pending' , '" + clientmail + "' , null , " + accountId + ")";
+        querySQL = "insert into invoice Values( '" + today + "' , " + amount + " , 'reservation payment ' , " + invoiceid + " , 'pending' , '" + clientmail + "' , null , " + accountId + ")";
         System.out.println(querySQL);
         statement.executeUpdate(querySQL);
     }
